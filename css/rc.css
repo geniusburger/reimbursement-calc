@@ -1,0 +1,27 @@
+#page {
+	padding-top: 15px;
+}
+
+.row .input-group {
+	margin-bottom: 15px;
+}
+
+footer p {
+	color: rgb(119, 119, 119);
+}
+
+td {
+	vertical-align: middle !important;
+}
+
+table {
+	width: auto !important;
+}
+
+.alert {
+	margin-top: 15px;
+}
+
+#durationForm {
+	margin-top: 10px;
+}

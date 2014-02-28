@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reimbursement Calculator</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/rc.css" rel="stylesheet">
+    <!-- <link href="css/rc.css" rel="stylesheet"> -->
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <div id="page" class="container theme-showcase" role="main">
+        <div class="jumbotron">
+            <h1 class="text-center">Reimbursement Calculator</h1>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3">
+                <div class="input-group">
+                    <span class="input-group-addon">Date</span>
+                    <input type="date" id="inputDate" class="form-control" autofocus>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3">
+                <div class="input-group">
+                    <span class="input-group-addon">$</span>
+                    <input type="text" id="inputAmount" class="form-control" placeholder="Amount">
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3">
+                <button type="button" id="inputButton" class="btn btn-info">Add Reimbursement</button>
+            </div>
+        </div>
+        <form class="form-inline" role="form" id="durationForm">
+            <label class="control-label">Obligation Duration: </label>
+            <div class="form-group">
+                <label class="sr-only" for="timeAmount">Time Amount</label>
+                <select id="timeAmount" class="form-control">
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="sr-only" for="timeUnit">Time Unit</label>
+                <select id="timeUnit" class="form-control">
+                    <option>Days</option>
+                    <option>Months</option>
+                    <option selected>Years</option>
+                </select>
+            </div>
+        </form>
+        <div class="alert alert-warning alert-dismissable hidden" id="cookieAlert">
+
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>Warning!</strong>Cookies must be enabled if you want to save your dates!
+        </div>
+        <div class="page-header">
+            <h1>
+                Dates
+                <button type="button" id="testButton" class="btn btn-info pull-right hidden">Load Sample Dates</button>
+                <button type="button" id="clearButton" class="btn btn-danger pull-right hidden">Clear All Dates</button>
+            </h1>
+        </div>
+        <noscript>
+            <h1>This page requires Javascript to run properly. Please enable it.</h1>
+        </noscript>
+        <table class="table" id="dateTable" align="center">
+            <thead>
+                <tr>
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Event</th>
+                    <th class="text-center">Amount</th>
+                    <th class="text-center">Owed</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+        <footer>
+            <p class="text-center">FYI, dates are automatically stored between sessions using cookies.</p>
+        </footer>
+    </div>
+
+    <script src="js/rc.js" type="text/javascript"></script>
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+</body>
+
+</html>
