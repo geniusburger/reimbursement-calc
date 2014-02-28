@@ -6,6 +6,11 @@
 	margin-bottom: 15px;
 }
 
+footer {
+	border-top: 1px solid rgb(28, 30, 34);
+	padding-top: 15px;
+}
+
 footer p {
 	color: rgb(119, 119, 119);
 }
@@ -24,4 +29,9 @@ table {
 
 #durationForm {
 	margin-top: 10px;
+}
+
+#githubImg {
+	margin-right: 5px;
+	margin-bottom: 2px;
 }
