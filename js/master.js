@@ -1,5 +1,155 @@
 
 //////////////////////////////////////////////////////////////////////////////////
+////////     Reimbursement Class
+//////////////////////////////////////////////////////////////////////////////////
+
+function Reimbursement(date, amount) {
+
+    this.amount = amount;
+    this.amountString = amount;
+    this.startDate = new Date(date);
+
+    if (this.isValid() === true) {
+        this.stopDate = new Date(this.startDate);
+        var timeAmount = Number(rc.getSelectedTimeAmount());
+        switch (rc.getSelectedTimeUnit()) {
+            case "Days":
+                this.stopDate.setDate(this.stopDate.getDate() + timeAmount);
+                break;
+            case "Months":
+                this.stopDate.setMonth(this.stopDate.getMonth() + timeAmount);
+                break;
+            default:
+                console.log("Failed to find time unit, defaulting to years");
+            case "Years":
+                this.stopDate.setFullYear(this.stopDate.getFullYear() + timeAmount);
+                break;
+        }
+
+        this.dollars = parseInt(amount);
+        var i = amount.indexOf(".");
+        if (i === -1) {
+            this.cents = 0;
+        } else {
+            var sub = amount.substring(amount.indexOf(".") + 1);
+            if (sub.length === 2) {
+                this.cents = parseInt(sub);
+            } else {
+                startDate = NaN;
+            }
+
+        }
+        this.amount = this.dollars * 100 + this.cents;
+    }
+};
+
+Reimbursement.prototype.isValid = function() {
+    return this.isValidDate() && this.isValidAmount();
+};
+
+Reimbursement.prototype.isInvalid = function() {
+    return this.isInvalidDate() || this.isInvalidAmount();
+};
+
+Reimbursement.prototype.isInvalidDate = function() {
+    return isNaN(this.startDate.getTime());
+};
+
+Reimbursement.prototype.isValidDate = function() {
+    return !this.isInvalidDate();
+};
+
+Reimbursement.prototype.isInvalidAmount = function() {
+    return !this.isValidAmount();
+};
+
+Reimbursement.prototype.isValidAmount = function() {
+    var matches = this.amountString.match(/^\s*\d+(\.\d\d)?\s*$/);
+    if (matches === null || matches.length === 0) {
+        return false;
+    }
+    return !isNaN(parseFloat(this.amountString)) && isFinite(this.amountString) && (parseFloat(this.amountString) >= 0);
+};
+
+Reimbursement.prototype.toString = function() {
+    return this.amountString + "@" + this.startDate.toDateString();
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+////////     ReimbursementEvent Class
+//////////////////////////////////////////////////////////////////////////////////
+
+function ReimbursementEvent(reimbursement, index, start) {
+    this.reimbursement = reimbursement;
+    this.index = index;
+    this.start = start;
+};
+
+ReimbursementEvent.prototype.isStart = function() {
+    return this.start;
+};
+
+ReimbursementEvent.prototype.isStop = function() {
+    return !this.start;
+};
+
+ReimbursementEvent.prototype.getAmount = function() {
+    return this.reimbursement.amount;
+};
+
+ReimbursementEvent.prototype.getDate = function() {
+    return this.start ? this.reimbursement.startDate : this.reimbursement.stopDate;
+};
+
+ReimbursementEvent.prototype.getAmountString = function() {
+    return "$" + this.reimbursement.dollars + "." + (this.reimbursement.cents < 10 ? "0" : "") + this.reimbursement.cents;
+};
+
+ReimbursementEvent.prototype.toString = function() {
+    return (this.start ? "+ " : "- ") + this.getDate().toDateString() + " : " + this.getAmountString();
+};
+
+//////////////////////////////////////////////////////////////////////////////////
+////////     Utilities
+//////////////////////////////////////////////////////////////////////////////////
+
+var util = {};
+
+/**
+ * Retrieve a cookie from the browser.
+ * @param  {string} name The name of the cookie to retrieve.
+ * @return {string} Value of the cookie or null if not found.
+ */ 
+util.getCookie = function(name) {
+    var name = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i].trim();
+        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+    }
+    return null;
+};
+
+/**
+ * Set a cookie in the browser.
+ * @param {string} name The name of the cookie to set.
+ * @param {string} value The value fo the cookie to set.
+ */
+util.setCookie = function(name, value) {
+    document.cookie = name + "=" + value;
+};
+
+/**
+ * Remove all child nodes.
+ * @param  {object} parent The node to remove all children from.
+ */
+util.removeChildren = function(parent) {
+    while (parent.firstChild) {
+        parent.removeChild(parent.firstChild);
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////////
 ////////     Reimbursement Calc
 //////////////////////////////////////////////////////////////////////////////////
 
