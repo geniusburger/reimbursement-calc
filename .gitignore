@@ -1,4 +1,3 @@
 .idea/
 reimbursement-calc.iml
-js/jsfiles.txt
-*.sublime-*
+*.sublime-workspace

@@ -1,0 +1,14 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	],
+    "settings":
+    {
+        "Combine: FileList": "./jsfiles.txt",
+        "Combine: InPath": "./js/"
+    }
+}
