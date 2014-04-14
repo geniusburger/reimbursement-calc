@@ -10,6 +10,6 @@
     "settings":
     {
         "Combine: FileList": "./jsfiles.txt",
-        "Combine: InPath": "./js/"
+        "Combine: InPath": "../js/"
     }
 }
