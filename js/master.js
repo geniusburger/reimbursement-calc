@@ -542,8 +542,12 @@ rc.drawChart = function() {
         var options = {
             pointSize: 5,
             backgroundColor: background, 
+            tooltip: {
+                textStyle: {
+                    color: text
+                }
+            },
             hAxis: {
-                title: 'Date',
                 titleTextStyle: {
                     color: text
                 },
@@ -556,7 +560,6 @@ rc.drawChart = function() {
                 }
             },
             vAxis: {
-                title: 'Owed',
                 titleTextStyle: {
                     color: text
                 },
@@ -572,7 +575,7 @@ rc.drawChart = function() {
                 position: 'none'
             }
         };
-        console.log(options);
+
         var chart = new google.visualization.LineChart(document.getElementById('chart'));
         chart.draw(data, options);
     } else {

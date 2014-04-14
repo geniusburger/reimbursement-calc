@@ -35,3 +35,7 @@ table {
 	margin-right: 5px;
 	margin-bottom: 2px;
 }
+
+g > g > path[fill="#ffffff"] {
+  fill: black;
+}
