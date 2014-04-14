@@ -11,3 +11,11 @@ Built using [Bootstrap](http://getbootstrap.com/) and the [Slate](http://bootswa
 ## Created
 
 2/2014
+
+## Project
+
+A [Sublime Text 3](http://www.sublimetext.com/3) project was used to keep everything together.
+
+### JavaScript Minification
+
+JavaScript minification was done using a fork of the ST3 plugin [CombineAndMinify](https://github.com/geniusburger/Sublime-CombineAndMinify).
