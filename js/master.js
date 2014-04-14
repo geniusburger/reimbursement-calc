@@ -185,6 +185,8 @@ rc.reimbursementEvents = [];
  */
 rc.runningAmount = [];
 
+rc.chartData = [];
+
 //////////////////////////////////////////////////////////////////////////////////
 ////////     Functions
 //////////////////////////////////////////////////////////////////////////////////
@@ -302,6 +304,8 @@ rc.print = function() {
         $("#testButton").removeClass("hidden");
         $("#clearButton").addClass("hidden");
     }
+
+    rc.drawChart();
 };
 
 rc.buildTodayRow = function(amount) {
@@ -310,12 +314,12 @@ rc.buildTodayRow = function(amount) {
     tr.appendChild(rc.buildTableCellText(rc.TODAY_TEXT, "bold|center"));
     tr.appendChild(rc.buildTableCellText(""));
     tr.appendChild(rc.buildTableCellText(""));
-    tr.appendChild(rc.buildTableCellText("$" + rc.getDollarsFromCentsString(amount), "bold|right"));
+    tr.appendChild(rc.buildTableCellText("$" + rc.getDollarsStringFromCents(amount), "bold|right"));
     tr.appendChild(rc.buildTableCellText(""));
     return tr;
 };
 
-rc.getDollarsFromCentsString = function(amount) {
+rc.getDollarsStringFromCents = function(amount) {
     var cents = (amount % 100);
     return parseInt(amount / 100) + "." + (cents < 10 ? "0" : "") + cents;
 };
@@ -342,7 +346,7 @@ rc.buildDateListItem = function(reimbursementEvent, amount, index) {
         rc.removeAt(reimbursementEvent.index);
     });
     li.appendChild(button);
-    li.appendChild(document.createTextNode(reimbursementEvent + " $" + rc.getDollarsFromCentsString(amount)));
+    li.appendChild(document.createTextNode(reimbursementEvent + " $" + rc.getDollarsStringFromCents(amount)));
     return li;
 };
 
@@ -351,7 +355,7 @@ rc.buildDateTableRow = function(reimbursementEvent, amount, index) {
     tr.appendChild(rc.buildTableCellText(reimbursementEvent.getDate().toDateString(), "right"));
     tr.appendChild(rc.buildTableCellText(reimbursementEvent.isStart() ? rc.DATE_START_TEXT : rc.DATE_STOP_TEXT, "center"));
     tr.appendChild(rc.buildTableCellText(reimbursementEvent.getAmountString(), "right"));
-    tr.appendChild(rc.buildTableCellText("$" + rc.getDollarsFromCentsString(amount), "right"));
+    tr.appendChild(rc.buildTableCellText("$" + rc.getDollarsStringFromCents(amount), "right"));
     tr.appendChild(rc.buildTableCellButton(reimbursementEvent.index));
     tr.dateIndex = reimbursementEvent.index;
     tr.onmouseover = rc.hoverRowHandler;
@@ -505,6 +509,76 @@ rc.populateTimeAmounts = function(unit, amount) {
     }
 
     timeAmount.options[amount - 1].selected = true;
+};
+
+rc.drawChart = function() {
+
+    if( rc.reimbursementEvents.length === 0) {
+        $("#chart").addClass("hidden");
+    } else if( chartIsReady) {
+        $("#chart").removeClass("hidden");
+        rc.chartData = [];
+        rc.chartData[0] = ['Date', 'Owed'];
+        for( var i = 0; i < rc.reimbursementEvents.length; i++) {
+            rc.chartData[i+1] = [rc.reimbursementEvents[i].getDate(), {v: rc.runningAmount[i]/100, f: '$' + rc.getDollarsStringFromCents(rc.runningAmount[i]) }];
+        }
+        var data = google.visualization.arrayToDataTable(rc.chartData);
+
+        var axis = {
+            baselineColor: '#272b30', 
+            gridlines: {
+                color: '#272b30'
+            }
+        };
+
+        var dark = '#272b30';
+        var mid = '#2e3338';
+        var light = '#49515a';
+        var text = '#c8c8c8';
+
+        var background = dark;
+        var grid = light;
+
+        var options = {
+            pointSize: 5,
+            backgroundColor: background, 
+            hAxis: {
+                title: 'Date',
+                titleTextStyle: {
+                    color: text
+                },
+                textStyle: {
+                    color: text
+                },
+                baselineColor: grid, 
+                gridlines: {
+                    color: grid
+                }
+            },
+            vAxis: {
+                title: 'Owed',
+                titleTextStyle: {
+                    color: text
+                },
+                textStyle: {
+                    color: text
+                },
+                baselineColor: grid, 
+                gridlines: {
+                    color: grid
+                }
+            },
+            legend: {
+                position: 'none'
+            }
+        };
+        console.log(options);
+        var chart = new google.visualization.LineChart(document.getElementById('chart'));
+        chart.draw(data, options);
+    } else {
+        $("#chart").addClass("hidden");
+        console.error("Chart not ready");
+    }
 };
 
 //////////////////////////////////////////////////////////////////////////////////
