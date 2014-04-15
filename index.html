@@ -108,7 +108,16 @@
         </footer>
     </div>
 
-    <script src="js/master.min.js"></script>
+    <script type="text/javascript">
+        <!--
+        console.log(window.location.protocol);
+        if( window.location.protocol === 'file:') {
+            document.writeln("<script src='js/master.js'></script>");
+        } else {
+            document.writeln("<script src='js/master.min.js'></script>");
+        }
+        //-->
+    </script>
     <script src="js/jquery-1.11.0.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
 </body>
