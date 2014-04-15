@@ -149,6 +149,9 @@ util.removeChildren = function(parent) {
     }
 };
 
+util.getNumberWithCommas = function(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
 //////////////////////////////////////////////////////////////////////////////////
 ////////     Reimbursement Calc
 //////////////////////////////////////////////////////////////////////////////////
@@ -162,6 +165,57 @@ var rc = {};
 rc.DATE_START_TEXT = "Reimbursed";
 rc.DATE_STOP_TEXT = "Obligation Expired";
 rc.TODAY_TEXT = "Today";
+
+rc.DARK = '#272b30';
+rc.MID = '#2e3338';
+rc.LIGHT = '#49515a';
+
+rc.LINE = '#3366cc';
+rc.TEXT = '#c8c8c8';
+rc.BACKGROUND = rc.DARK;
+rc.GRID = rc.LIGHT;
+
+rc.CHART_OPTIONS = {
+    pointSize: 5,
+    backgroundColor: rc.BACKGROUND,
+    selectionMode: 'multiple',
+    series: {
+        color: rc.LINE
+    },
+    tooltip: {
+        textStyle: {
+            color: rc.TEXT
+        }
+    },
+    hAxis: {
+        titleTextStyle: {
+            color: rc.TEXT
+        },
+        textStyle: {
+            color: rc.TEXT
+        },
+        baselineColor: rc.GRID, 
+        gridlines: {
+            color: rc.GRID
+        }
+    },
+    vAxis: {
+        format: '$#,###',
+        titleTextStyle: {
+            color: rc.TEXT
+        },
+        textStyle: {
+            color: rc.TEXT
+        },
+        baselineColor: rc.GRID, 
+        gridlines: {
+            color: rc.GRID
+        }
+    },
+    legend: {
+        position: 'none'
+    }
+};
 
 //////////////////////////////////////////////////////////////////////////////////
 ////////     Variables
@@ -186,6 +240,12 @@ rc.reimbursementEvents = [];
 rc.runningAmount = [];
 
 rc.chartData = [];
+
+rc.chart = undefined;
+
+rc.selection = [];
+
+rc.chartColor
 
 //////////////////////////////////////////////////////////////////////////////////
 ////////     Functions
@@ -319,9 +379,13 @@ rc.buildTodayRow = function(amount) {
     return tr;
 };
 
-rc.getDollarsStringFromCents = function(amount) {
+rc.getDollarsStringFromCents = function(amount, useThousandsSeparators) {
     var cents = (amount % 100);
-    return parseInt(amount / 100) + "." + (cents < 10 ? "0" : "") + cents;
+    var dollars = parseInt(amount / 100);
+    if( useThousandsSeparators) {
+        dollars = util.getNumberWithCommas(dollars);
+    }
+    return dollars + "." + (cents < 10 ? "0" : "") + cents;
 };
 
 rc.buildDateListItem = function(reimbursementEvent, amount, index) {
@@ -358,6 +422,7 @@ rc.buildDateTableRow = function(reimbursementEvent, amount, index) {
     tr.appendChild(rc.buildTableCellText("$" + rc.getDollarsStringFromCents(amount), "right"));
     tr.appendChild(rc.buildTableCellButton(reimbursementEvent.index));
     tr.dateIndex = reimbursementEvent.index;
+    tr.eventIndex = index;
     tr.onmouseover = rc.hoverRowHandler;
     tr.onmouseout = rc.unhoverRowHandler;
     return tr;
@@ -401,26 +466,109 @@ rc.buildTableCellButton = function(index) {
     return td;
 };
 
+/**
+ * Handles mouseover events for table rows.
+ * The tr element must have a dateIndex property defined that indicates which ReimbursementEvent it represents.
+ * The matching event pair rows will be highlighted.
+ */
 rc.hoverRowHandler = function() {
-    var dateIndex = this.dateIndex;
-    var r = rc.reimbursements[dateIndex];
+    rc.highlightRows(this.dateIndex);
+}
+
+/**
+ * Handles mouseout events for table rows. All rows will be unhighlighted.
+ */
+rc.unhoverRowHandler = function() {
+    rc.chart.setSelection();
+    rc.unhighlightRows();
+};
+
+/**
+ * Handles mouseover events for points on the chart.
+ * The matching event pair rows will be highlighted.
+ * @param  {Object} point Represents the point being hovered. Has attributes row and column.
+ */
+rc.hoverPointHandler = function(point) {
+    rc.lastPoint = point;
+    rc.highlightRows(rc.reimbursementEvents[point.row].index);
+};
+
+/**
+ * Handles mouseout events for points on the chart. All rows will be unhighlighted.
+ */
+rc.unhoverPointHandler = function() {
+    rc.unhighlightRows();
+};
+
+/**
+ * Handles select events for points on the chart.
+ * The last hovered point will be rehighlighted since any click will results in a deselection of a highlighted point.
+ */
+rc.selectPointHandler = function() {
+    rc.highlightRows(rc.reimbursementEvents[rc.lastPoint.row].index);
+};
+
+/**
+ * Highlights the table rows for the pair of events relating to the specified Reimbursement.
+ * @param  {number} dateIndex Index of the Reimbursement to highlight events for.
+ */
+rc.highlightRows = function(dateIndex) {
+    rc.selection = [];
     var first = true;
     $("#tableBody").children("tr").each(function(index, el) {
         if (el.dateIndex === dateIndex) {
             if (first === true) {
                 first = false;
-                $(el).addClass("danger")
+                $(el).addClass("danger");
+                if( !rc.RED) {
+                    rc.RED = $(el).find("td").first().css('backgroundColor');
+                }
             } else {
                 $(el).addClass("success");
+                if( !rc.GREEN) {
+                    rc.GREEN = $(el).find("td").first().css('backgroundColor');
+                }
             }
+            rc.selection.push({row: this.eventIndex, column: 1});
         } else {
             $(el).removeClass("danger");
             $(el).removeClass("success");
         }
     });
-}
 
-rc.unhoverRowHandler = function() {
+    rc.chart.setSelection(rc.selection);
+    var selectedCircles = $("svg>g>g>g>circle");
+    var d = [];
+    for( var i = 0; i < selectedCircles.length; i++) {
+        d.push(selectedCircles[i].outerHTML);
+    }
+    var red1 = 0;
+    var red2 = 1;
+    var green1 = 2;
+    var green2 = 3;
+    if( selectedCircles.length > 4) {
+        // The use is hovering over a point so extra circles are being drawn
+        if( selectedCircles[4].getAttribute("stroke") == "none") {
+            // The first of a pair (the red one) of points was hovered
+            red2 = 4;
+            green1 = 5;
+        }
+        green2 = 6;
+    }
+    rc.setSelectedPointColor(selectedCircles[red1], selectedCircles[red2], rc.RED);
+    rc.setSelectedPointColor(selectedCircles[green1], selectedCircles[green2], rc.GREEN);
+};
+
+rc.setSelectedPointColor = function(outerCircle, innerCircle, color) {
+    $(outerCircle).attr("stroke", color);
+    $(innerCircle).attr("fill", color);
+};
+
+/**
+ * Unhighlights all rows in the event table.
+ * @return {[type]} [description]
+ */
+rc.unhighlightRows = function() {
     $("#tableBody").children("tr").removeClass("danger").removeClass("success");
 };
 
@@ -513,74 +661,31 @@ rc.populateTimeAmounts = function(unit, amount) {
 
 rc.drawChart = function() {
 
-    if( rc.reimbursementEvents.length === 0) {
-        $("#chart").addClass("hidden");
-    } else if( chartIsReady) {
-        $("#chart").removeClass("hidden");
-        rc.chartData = [];
-        rc.chartData[0] = ['Date', 'Owed'];
-        for( var i = 0; i < rc.reimbursementEvents.length; i++) {
-            rc.chartData[i+1] = [rc.reimbursementEvents[i].getDate(), {v: rc.runningAmount[i]/100, f: '$' + rc.getDollarsStringFromCents(rc.runningAmount[i]) }];
-        }
-        var data = google.visualization.arrayToDataTable(rc.chartData);
-
-        var axis = {
-            baselineColor: '#272b30', 
-            gridlines: {
-                color: '#272b30'
-            }
-        };
-
-        var dark = '#272b30';
-        var mid = '#2e3338';
-        var light = '#49515a';
-        var text = '#c8c8c8';
-
-        var background = dark;
-        var grid = light;
-
-        var options = {
-            pointSize: 5,
-            backgroundColor: background, 
-            tooltip: {
-                textStyle: {
-                    color: text
-                }
-            },
-            hAxis: {
-                titleTextStyle: {
-                    color: text
-                },
-                textStyle: {
-                    color: text
-                },
-                baselineColor: grid, 
-                gridlines: {
-                    color: grid
-                }
-            },
-            vAxis: {
-                titleTextStyle: {
-                    color: text
-                },
-                textStyle: {
-                    color: text
-                },
-                baselineColor: grid, 
-                gridlines: {
-                    color: grid
-                }
-            },
-            legend: {
-                position: 'none'
-            }
-        };
-
-        var chart = new google.visualization.LineChart(document.getElementById('chart'));
-        chart.draw(data, options);
-    } else {
+    if( !chartIsReady) {
         $("#chart").addClass("hidden");
         console.error("Chart not ready");
+    } else {
+        if( !rc.chart) {
+            rc.chart = new google.visualization.LineChart(document.getElementById('chart'));
+            google.visualization.events.addListener(rc.chart, 'select', rc.selectPointHandler);
+            google.visualization.events.addListener(rc.chart, 'onmouseover', rc.hoverPointHandler);
+            google.visualization.events.addListener(rc.chart, 'onmouseout', rc.unhoverPointHandler);
+        }
+
+        if( rc.reimbursementEvents.length === 0) {
+            $("#chart").addClass("hidden");
+        } else {
+            $("#chart").removeClass("hidden");
+            rc.chartData = [];
+            rc.chartData[0] = ['Date', 'Owed'];
+            for( var i = 0; i < rc.reimbursementEvents.length; i++) {
+                rc.chartData[i+1] = [rc.reimbursementEvents[i].getDate(),
+                    {v: rc.runningAmount[i]/100, f: '$' + rc.getDollarsStringFromCents(rc.runningAmount[i], true) }];
+            }
+            var data = google.visualization.arrayToDataTable(rc.chartData);
+
+            rc.chart.draw(data, rc.CHART_OPTIONS);
+        }
     }
 };
 

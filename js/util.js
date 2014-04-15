@@ -38,3 +38,7 @@ util.removeChildren = function(parent) {
         parent.removeChild(parent.firstChild);
     }
 };
+
+util.getNumberWithCommas = function(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+};
