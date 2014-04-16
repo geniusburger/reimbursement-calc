@@ -176,9 +176,12 @@ rc.BACKGROUND = rc.DARK;
 rc.GRID = rc.LIGHT;
 
 rc.CHART_OPTIONS = {
-    pointSize: 5,
+    pointSize: 6,
     backgroundColor: rc.BACKGROUND,
     selectionMode: 'multiple',
+    animation: {
+        duration: 1000
+    },
     series: {
         color: rc.LINE
     },
@@ -196,7 +199,7 @@ rc.CHART_OPTIONS = {
         },
         baselineColor: rc.GRID, 
         gridlines: {
-            color: rc.GRID
+            color: 'transparent'
         }
     },
     vAxis: {
