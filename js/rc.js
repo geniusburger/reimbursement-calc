@@ -221,11 +221,11 @@ rc.print = function() {
 rc.buildTodayRow = function(amount) {
     var tr = document.createElement("tr");
     tr.className = "active";
-    tr.appendChild(rc.buildTableCellText(rc.TODAY_TEXT, "bold|center"));
-    tr.appendChild(rc.buildTableCellText(""));
-    tr.appendChild(rc.buildTableCellText(""));
-    tr.appendChild(rc.buildTableCellText("$" + rc.getDollarsStringFromCents(amount), "bold|right"));
-    tr.appendChild(rc.buildTableCellText(""));
+    tr.appendChild(new BoldTextCell(rc.TODAY_TEXT).buildCell());
+    tr.appendChild(new Cell().buildCell());
+    tr.appendChild(new Cell().buildCell());
+    tr.appendChild(new BoldCurrencyCell(amount).buildCell());
+    tr.appendChild(new Cell().buildCell());
     return tr;
 };
 
@@ -238,82 +238,18 @@ rc.getDollarsStringFromCents = function(amount, useThousandsSeparators) {
     return dollars + "." + (cents < 10 ? "0" : "") + cents;
 };
 
-rc.buildDateListItem = function(reimbursementEvent, amount, index) {
-    var li = document.createElement("li");
-    li.className = "list-group-item list-group-item-";
-    if (index === 0) {
-        li.className += "danger";
-    } else if (amount === 0) {
-        li.className += "success";
-    } else if (reimbursementEvent.isStart() === true) {
-        li.className += "warning";
-    } else {
-        li.className += "info";
-    }
-    var button = document.createElement("button");
-    button.type = "button";
-    button.className = "close";
-    button.setAttribute("data-dismiss", "alert");
-    button.setAttribute("aria-hidden", "true");
-    button.innerHTML = "&times;";
-    $(button).on('click', null, function() {
-        rc.removeAt(reimbursementEvent.index);
-    });
-    li.appendChild(button);
-    li.appendChild(document.createTextNode(reimbursementEvent + " $" + rc.getDollarsStringFromCents(amount)));
-    return li;
-};
-
 rc.buildDateTableRow = function(reimbursementEvent, amount, index) {
     var tr = document.createElement("tr");
-    tr.appendChild(rc.buildTableCellText(reimbursementEvent.getDate().toDateString(), "right"));
-    tr.appendChild(rc.buildTableCellText(reimbursementEvent.isStart() ? rc.DATE_START_TEXT : rc.DATE_STOP_TEXT, "center"));
-    tr.appendChild(rc.buildTableCellText(reimbursementEvent.getAmountString(), "right"));
-    tr.appendChild(rc.buildTableCellText("$" + rc.getDollarsStringFromCents(amount), "right"));
-    tr.appendChild(rc.buildTableCellButton(reimbursementEvent.index));
+    tr.appendChild(new DateCell(reimbursementEvent.getDate()).buildCell());
+    tr.appendChild(new TextCell(reimbursementEvent.isStart() ? rc.DATE_START_TEXT : rc.DATE_STOP_TEXT).buildCell());
+    tr.appendChild(new CurrencyCell(reimbursementEvent.getAmount()).buildCell());
+    tr.appendChild(new CurrencyCell(amount).buildCell());
+    tr.appendChild(new ButtonCell(reimbursementEvent.index, rc.removeDate).buildCell());
     tr.dateIndex = reimbursementEvent.index;
     tr.eventIndex = index;
     tr.onmouseover = rc.hoverRowHandler;
     tr.onmouseout = rc.unhoverRowHandler;
     return tr;
-};
-
-rc.buildTableCellText = function(text, mod) {
-    var td = document.createElement("td");
-    var root = document.createTextNode(text);
-    if (mod === undefined) {
-        mod = "";
-    }
-
-    if (mod.match(/bold/)) {
-        var strong = document.createElement("strong");
-        strong.appendChild(root);
-        root = strong;
-    }
-
-    if (mod.match(/right/)) {
-        td.className = "text-right";
-    }
-
-    if (mod.match(/center/)) {
-        td.className = "text-center";
-    }
-
-    td.appendChild(root);
-    return td;
-};
-
-rc.buildTableCellButton = function(index) {
-    var td = document.createElement("td");
-    var button = document.createElement("button");
-    button.type = "button";
-    button.className = "close";
-    button.setAttribute("aria-hidden", "true");
-    button.innerHTML = "&times;";
-    button.dateIndex = index;
-    $(button).on('click', null, rc.removeDate);
-    td.appendChild(button);
-    return td;
 };
 
 /**
@@ -530,7 +466,7 @@ rc.drawChart = function() {
             rc.chartData[0] = ['Date', 'Owed'];
             for( var i = 0; i < rc.reimbursementEvents.length; i++) {
                 rc.chartData[i+1] = [rc.reimbursementEvents[i].getDate(),
-                    {v: rc.runningAmount[i]/100, f: '$' + rc.getDollarsStringFromCents(rc.runningAmount[i], true) }];
+                    {v: rc.runningAmount[i]/100, f: new CurrencyCell(rc.runningAmount[i]).toString() }];
             }
             var data = google.visualization.arrayToDataTable(rc.chartData);
 

@@ -1,5 +1,5 @@
 
-DateCell.prototype = new Cell();
+DateCell.prototype = Object.create(Cell.prototype);
 
 function DateCell(date) {
 	Cell.apply(this, ['text-right']);
@@ -7,9 +7,9 @@ function DateCell(date) {
 }
 
 DateCell.prototype.buildContents = function() {
-	document.createTextNode(this.toString());
+	return document.createTextNode(this.toString());
 };
 
-DateCell.prototype.toString() = function() {
+DateCell.prototype.toString = function() {
 	return this.date.toDateString();
 }

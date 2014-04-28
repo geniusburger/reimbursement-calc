@@ -1,5 +1,5 @@
 
-BoldCurrencyCell.prototype = new CurrencyCell();
+BoldCurrencyCell.prototype = Object.create(CurrencyCell.prototype);
 
 function BoldCurrencyCell(cents) {
 	CurrencyCell.apply(this, arguments);	// Call super ctor
@@ -7,6 +7,6 @@ function BoldCurrencyCell(cents) {
 
 BoldCurrencyCell.prototype.buildContents = function() {
 	var strong = document.createElement('strong');
-	strong.appendChild(CurrencyCell.prototype.buildContents.apply(this, []);
+	strong.appendChild(CurrencyCell.prototype.buildContents.apply(this, []));
 	return strong;
 };

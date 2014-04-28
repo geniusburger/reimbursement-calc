@@ -1,5 +1,5 @@
 
-TextCell.prototype = new Cell();
+TextCell.prototype = Object.create(Cell.prototype);
 
 function TextCell(text) {
 	Cell.apply(this, ['text-center']);

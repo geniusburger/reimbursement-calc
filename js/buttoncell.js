@@ -1,5 +1,5 @@
 
-ButtonCell.prototype = new Cell();
+ButtonCell.prototype = Object.create(Cell.prototype);
 
 function ButtonCell(dateIndex, onclick) {
 	Cell.apply(this, arguments);

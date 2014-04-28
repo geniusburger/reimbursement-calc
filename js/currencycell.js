@@ -1,5 +1,5 @@
 
-CurrencyCell.prototype = new Cell();
+CurrencyCell.prototype = Object.create(Cell.prototype);
 
 function CurrencyCell(cents, useThousandsSeparators) {
 	Cell.apply(this, ['text-right']);
