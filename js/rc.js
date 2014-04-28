@@ -228,37 +228,36 @@ rc.print = function() {
 };
 
 rc.buildTodayRow = function(amount) {
-    var tr = document.createElement("tr");
+    var tr = rc.buildRow([
+    	new BoldTextCell(rc.TODAY_TEXT),
+    	new Cell(),
+    	new Cell(),
+    	new BoldCurrencyCell(amount),
+    	new Cell()
+    ]);
     tr.className = "active";
-    tr.appendChild(new BoldTextCell(rc.TODAY_TEXT).buildCell());
-    tr.appendChild(new Cell().buildCell());
-    tr.appendChild(new Cell().buildCell());
-    tr.appendChild(new BoldCurrencyCell(amount).buildCell());
-    tr.appendChild(new Cell().buildCell());
     return tr;
-};
-
-rc.getDollarsStringFromCents = function(amount, useThousandsSeparators) {
-    var cents = (amount % 100);
-    var dollars = parseInt(amount / 100);
-    if( useThousandsSeparators) {
-        dollars = util.getNumberWithCommas(dollars);
-    }
-    return dollars + "." + (cents < 10 ? "0" : "") + cents;
 };
 
 rc.buildDateTableRow = function(reimbursementEvent, amount, index) {
-    var tr = document.createElement("tr");
-    tr.appendChild(new DateCell(reimbursementEvent.getDate()).buildCell());
-    tr.appendChild(new TextCell(reimbursementEvent.isStart() ? rc.DATE_START_TEXT : rc.DATE_STOP_TEXT).buildCell());
-    tr.appendChild(new CurrencyCell(reimbursementEvent.getAmount()).buildCell());
-    tr.appendChild(new CurrencyCell(amount).buildCell());
-    tr.appendChild(new ButtonCell(reimbursementEvent.index, rc.removeDate).buildCell());
+    var tr = rc.buildRow( [
+    	new DateCell(reimbursementEvent.getDate()),
+    	new TextCell(reimbursementEvent.isStart() ? rc.DATE_START_TEXT : rc.DATE_STOP_TEXT),
+    	new CurrencyCell(reimbursementEvent.getAmount()),
+    	new CurrencyCell(amount),
+    	new ButtonCell(reimbursementEvent.index, rc.removeDate)
+    ]);
     tr.dateIndex = reimbursementEvent.index;
     tr.eventIndex = index;
-    // tr.onmouseover = rc.hoverRowHandler;
-    // tr.onmouseout = rc.unhoverRowHandler;
+    tr.onmouseover = rc.hoverRowHandler;
+    tr.onmouseout = rc.unhoverRowHandler;
     return tr;
+};
+
+rc.buildRow = function(cells) {
+	var tr = document.createElement("tr");
+	cells.forEach(function(cell){tr.appendChild(cell.buildCell());});
+	return tr;
 };
 
 /**
