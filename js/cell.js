@@ -9,9 +9,11 @@ Cell.prototype.buildContents = function() {
 
 Cell.prototype.buildCell = function() {
 	var td = document.createElement('td');
-	td.appendChild(this.buildContents());
+	var div = document.createElement('div');
+	div.appendChild(this.buildContents());
 	if( this.alignmentClass) {
 		td.className = this.alignmentClass;
 	}
+	td.appendChild(div);
 	return td;
 };

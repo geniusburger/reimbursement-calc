@@ -188,7 +188,7 @@ rc.processReimbursements = function() {
 rc.print = function() {
 
     var table = document.getElementById("tableBody");
-
+    var rows = [];
     util.removeChildren(table);
 
     var lastTime = 0;
@@ -196,15 +196,15 @@ rc.print = function() {
     var printedToday = false;
     for (var i = 0; i < rc.reimbursementEvents.length; i++) {
         if (!printedToday && now > lastTime && now <= rc.reimbursementEvents[i].getDate().getTime()) {
-            table.appendChild(rc.buildTodayRow(i === 0 ? 0 : rc.runningAmount[i - 1]));
+            rows.push(rc.buildTodayRow(i === 0 ? 0 : rc.runningAmount[i - 1]));
             printedToday = true;
         }
 
-        table.appendChild(rc.buildDateTableRow(rc.reimbursementEvents[i], rc.runningAmount[i], i));
+        rows.push(rc.buildDateTableRow(rc.reimbursementEvents[i], rc.runningAmount[i], i));
     }
 
     if (!printedToday && rc.reimbursementEvents.length > 1) {
-        table.appendChild(rc.buildTodayRow(0));
+        rows.push(rc.buildTodayRow(0));
     }
 
     if (rc.reimbursementEvents.length > 1) {
@@ -214,6 +214,15 @@ rc.print = function() {
         $("#testButton").removeClass("hidden");
         $("#clearButton").addClass("hidden");
     }
+    var options = {
+    	duration: 50
+    };
+    rows.forEach(function(tr, i) {
+    	var divs = $(tr.querySelectorAll('td>div'));
+    	$(divs).hide();
+    	table.appendChild(tr);
+    	window.setTimeout(function(){divs.slideDown(options);}, i * 50);
+    });
 
     rc.drawChart();
 };
@@ -247,8 +256,8 @@ rc.buildDateTableRow = function(reimbursementEvent, amount, index) {
     tr.appendChild(new ButtonCell(reimbursementEvent.index, rc.removeDate).buildCell());
     tr.dateIndex = reimbursementEvent.index;
     tr.eventIndex = index;
-    tr.onmouseover = rc.hoverRowHandler;
-    tr.onmouseout = rc.unhoverRowHandler;
+    // tr.onmouseover = rc.hoverRowHandler;
+    // tr.onmouseout = rc.unhoverRowHandler;
     return tr;
 };
 
