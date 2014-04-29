@@ -33,13 +33,11 @@ function Currency(amount) {
 
     if( typeof amount === 'string') {
         // amount is a currency string with dollars and cents
+        amount = amount.replace(/\s/g,'');  // Remove all whitespace
         if( !isNaN(amount)) {
-            this.dollars = parseInt(amount);
-
-            var decimalIndex = amount.indexOf('.');
-            if( decimalIndex > -1 && decimalIndex < (amount.length - 1)) {
-                this.cents = parseInt(amount.substring(decimalIndex + 1))
-            }
+            var parts = amount.split('.');
+            this.dollars = parseInt(parts[0]);
+            this.cents = parseInt(parts[1]);
 
             // Check if no dollars/cents were included
             if( isNaN(this.dollars)) {
@@ -47,6 +45,9 @@ function Currency(amount) {
             }
             if( isNaN(this.cents)) {
                 this.cents = 0;
+            }
+            if( parts[1].length === 1) {
+                this.cents *= 10;   // Adjust for single digit cent strings
             }
 
             this.valid = true;
