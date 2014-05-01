@@ -1,6 +1,6 @@
 /**
  * Holds currency values and helps with addition, subtraction, and formatting.
- * @param amount
+ * @param {string|Currency} amount
  * @constructor
  */
 function Currency(amount) {
@@ -30,6 +30,12 @@ function Currency(amount) {
      * @private
      */
     this.cents = 0;
+
+    /**
+     * Indicates if this is the start of a pair of Currency objects;
+     * @type {boolean}
+     */
+    this.start = true;
 
     if( typeof amount === 'string') {
         // amount is a currency string with dollars and cents
@@ -66,6 +72,7 @@ function Currency(amount) {
     } else if( typeof amount === 'object') {
         // amount might contain dollar and cents fields
         if( amount instanceof Currency) {
+            this.start = false;
             this.dollars = amount.dollars;
             this.cents = amount.cents;
             this.valid = true;
@@ -74,6 +81,19 @@ function Currency(amount) {
         }
     }
 }
+
+/**
+ * Adjusts another Currency object by adding or subtracting this to/from it.
+ * @param other The other Currency to adjust.
+ * @returns {Currency} other
+ */
+Currency.prototype.adjust = function(other) {
+    if( this.start) {
+        return other.add(this);
+    } else {
+        return other.subtract(this);
+    }
+};
 
 /**
  * Add another Currency object to this. This object will be updated.
@@ -128,7 +148,7 @@ Currency.prototype.getDollarsString = function() {
     } else {
         return this.dollars.toString();
     }
-}
+};
 
 /**
  * Gets just the cents as a formatted string.
@@ -139,7 +159,7 @@ Currency.prototype.getCentsString = function() {
         return this.cents.toString();
     }
     return '0' + this.cents;
-}
+};
 
 /**
  * Gets this as formatted currency string.

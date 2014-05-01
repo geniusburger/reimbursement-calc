@@ -17,3 +17,7 @@ ButtonCell.prototype.buildContents = function() {
     $(button).click(this.onclick);
     return button;
 };
+
+ButtonCell.prototype.onclick = function(e) {
+    $(this).closest('tr').row.remove();
+};

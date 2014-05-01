@@ -1,24 +1,21 @@
 
 CurrencyCell.prototype = Object.create(Cell.prototype);
 
-function CurrencyCell(cents, useThousandsSeparators) {
+function CurrencyCell(currency, useThousandsSeparators) {
 	Cell.apply(this, ['text-right']);
-	this.cents = cents;
+	this.currency = currency;
 	this.useThousandsSeparators = useThousandsSeparators;
 	if( typeof useThousandsSeparators === 'undefined') {
 		this.useThousandsSeparators = true;
 	}
 }
 
-CurrencyCell.prototype.buildContents = function() {
-	return document.createTextNode(this.toString());
-};
+CurrencyCell.prototype.update = function(currency) {
+	this.currency = currency;
+	util.removeChildren(this.td);
+	this.contentHolder.appendChild(this.buildContents());
+}
 
-CurrencyCell.prototype.toString = function() {
-    var cents = (this.cents % 100);
-    var dollars = parseInt(this.cents / 100);
-    if( this.useThousandsSeparators) {
-        dollars = dollars.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");	// add thousands separators
-    }
-    return '$' + dollars + '.' + (cents < 10 ? '0' : '') + cents;
+CurrencyCell.prototype.buildContents = function() {
+	return document.createTextNode(this.currency.toString());
 };

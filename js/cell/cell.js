@@ -15,5 +15,7 @@ Cell.prototype.buildCell = function() {
 		td.className = this.alignmentClass;
 	}
 	td.appendChild(div);
+	this.td = td;
+	this.contentHolder = div;
 	return td;
 };
