@@ -12,10 +12,10 @@ TodayRow.prototype = Object.create(Row.prototype);
 function TodayRow() {
     Row.apply(this, [
 	    new BoldDateCell(new Date(), todayRowUtil.TODAY_TEXT),
-	    new TextCell(''),
+	    new InvisibleTextCell('$00,000.00'),
 	    new BoldCurrencyCell(new Currency('0')),
-	    new TextCell(''),
-	    new TextCell('')]);
+	    new InvisibleTextCell(dateRowUtil.DATE_START_TEXT.length > dateRowUtil.DATE_STOP_TEXT.length ? dateRowUtil.DATE_START_TEXT : dateRowUtil.DATE_STOP_TEXT),
+	    new InvisibleTextCell(' ')]);
 }
 
 TodayRow.prototype.build = function() {

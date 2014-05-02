@@ -4,9 +4,9 @@ CurrencyCell.prototype = Object.create(Cell.prototype);
 function CurrencyCell(currency, useThousandsSeparators) {
 	Cell.apply(this, ['text-right']);
 	this.currency = currency;
-	this.useThousandsSeparators = useThousandsSeparators;
+	this.currency.useThousandsSeparators = useThousandsSeparators;
 	if( typeof useThousandsSeparators === 'undefined') {
-		this.useThousandsSeparators = true;
+		this.currency.useThousandsSeparators = true;
 	}
 }
 

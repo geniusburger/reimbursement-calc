@@ -33,7 +33,7 @@ function Row( dateCell, amountCell, owedCell, typeCell, buttonCell) {
 	this.dateCell = dateCell;
 	this.amountCell = amountCell;
 	this.owedCell = owedCell;
-	this.cells = [dateCell, amountCell, owedCell, typeCell, buttonCell];
+	this.cells = [dateCell, typeCell, amountCell, owedCell, buttonCell];
 }
 
 Row.prototype.build = function() {
