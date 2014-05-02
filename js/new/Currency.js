@@ -88,10 +88,10 @@ function Currency(amount) {
  * @returns {Currency} other
  */
 Currency.prototype.adjust = function(other) {
-    if( this.start) {
-        return other.add(this);
+    if( other.start) {
+        return this.add(other);
     } else {
-        return other.subtract(this);
+        return this.subtract(other);
     }
 };
 

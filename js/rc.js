@@ -99,11 +99,11 @@ rc.selection = [];
 ////////     Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-rc.addDate = function(date) {
-    if (date.isValid()) {
-        rc.reimbursements[rc.reimbursements.length] = date;
+rc.addDate = function(r) {
+    if (r.isValid()) {
+        dateRowUtil.add(r.startDate, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), r.amountString);
     }
-    return date.isValid();
+    return r.isValid();
 };
 
 rc.removeDate = function() {
@@ -492,6 +492,9 @@ window.onload = function() {
     $("#clearButton").on('click', null, rc.clearDates);
     $("#inputAmount").keypress(rc.enterCatch);
     $("#inputDate").keypress(rc.enterCatch);
+
+	rowUtil.table = document.getElementById('dateTable');
+	todayRowUtil.add();
 
     rc.populateTimeAmounts('Years', 2);
 

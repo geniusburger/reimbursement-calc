@@ -1,12 +1,24 @@
+todayRowUtil = {
+	exists: false,
+	add: function() {
+		rowUtil.add(new TodayRow());
+		rowUtil.updateOwed();
+	}
+};
 
 TodayRow.prototype = Object.create(Row.prototype);
 
 function TodayRow() {
-    Row.apply(this, arguments);
+    Row.apply(this, [new DateCell(new Date()), new CurrencyCell('0')]);
 }
 
-Row.prototype.build = function() {
+TodayRow.prototype.build = function() {
     var tr = Row.prototype.build.apply(this, []);
     tr.className = 'active';
     return tr;
+};
+
+TodayRow.prototype.update = function(currency) {
+	this.owedCell.update(currency);
+	return currency;
 };
