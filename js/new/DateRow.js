@@ -20,8 +20,14 @@ dateRowUtil = {
 				break;
 		}
 
-		rowUtil.add(new DateRow(date, amount));
-		rowUtil.add(new DateRow(future, new Currency(amount)));
+		var startRow = new DateRow(date, amount);
+		var stopRow = new DateRow(future, new Currency(amount));
+
+		startRow.pair(stopRow, true);
+		stopRow.pair(startRow, false);
+
+		rowUtil.add(startRow);
+		rowUtil.add(stopRow);
 		rowUtil.updateOwed();
 	}
 };
@@ -36,10 +42,16 @@ function DateRow(date, amount) {
 		new TextCell(amount.start ? dateRowUtil.DATE_START_TEXT : dateRowUtil.DATE_STOP_TEXT),
 		new ButtonCell()]);
 	this.highlightClass = amount.start ? 'danger' : 'success';
+	this.matchingRow = undefined;
+};
+
+DateRow.prototype.pair = function(matchingRow, start) {
+	this.matchingRow = matchingRow;
+	this.amountCell.currency.start = start;
 };
 
 DateRow.prototype.remove = function () {
-	$([this.tr,this.pair.tr]).remove();
+	$([this.tr,this.matchingRow.tr]).remove();
 };
 
 DateRow.prototype.highlight = function (enable, recursive) {
@@ -50,7 +62,7 @@ DateRow.prototype.highlight = function (enable, recursive) {
 	}
 
 	if( recursive) {
-		this.pair.highlight(enable, false);
+		this.matchingRow.highlight(enable, false);
 	}
 };
 
@@ -62,7 +74,7 @@ DateRow.prototype.build = function () {
 };
 
 DateRow.prototype.update = function(currency) {
-	currency.add(this.amountCell.currency);
+	currency.adjust(this.amountCell.currency);
 	this.owedCell.update(currency);
 	return currency;
 };

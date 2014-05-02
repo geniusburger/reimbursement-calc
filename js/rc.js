@@ -485,7 +485,7 @@ window.onload = function() {
 //    $("#inputAmount").keypress(rc.enterCatch);
 //    $("#inputDate").keypress(rc.enterCatch);
 
-	rowUtil.table = document.getElementById('dateTable');
+	rowUtil.table = document.getElementById('tableBody');
 	todayRowUtil.add();
 
     rc.populateTimeAmounts('Years', 2);

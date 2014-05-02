@@ -4,6 +4,9 @@ BoldDateCell.prototype = Object.create(DateCell.prototype);
 function BoldDateCell(date, today) {
 	DateCell.apply(this, arguments);	// Call super ctor
 	this.today = today;
+	if( this.today) {
+		this.alignmentClass = 'text-center';
+	}
 }
 
 BoldDateCell.prototype.buildContents = function() {
