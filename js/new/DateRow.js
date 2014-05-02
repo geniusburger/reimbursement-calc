@@ -52,6 +52,11 @@ DateRow.prototype.pair = function(matchingRow, start) {
 
 DateRow.prototype.remove = function () {
 	$([this.tr,this.matchingRow.tr]).remove();
+	rowUtil.updateOwed();
+	if( rowUtil.getRows().length < 2) {
+		$("#testButton").removeClass("hidden");
+		$("#clearButton").addClass("hidden");
+	}
 };
 
 DateRow.prototype.highlight = function (enable, recursive) {

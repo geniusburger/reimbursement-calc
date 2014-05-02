@@ -16,5 +16,5 @@ ButtonCell.prototype.buildContents = function() {
 };
 
 ButtonCell.prototype.onclick = function(e) {
-    $(this).closest('tr').row.remove();
+    $(this).closest('tr')[0].row.remove();
 };
