@@ -1,18 +1,18 @@
 
 BoldDateCell.prototype = Object.create(DateCell.prototype);
 
-function BoldDateCell(date, today) {
+function BoldDateCell(date, text) {
 	DateCell.apply(this, arguments);	// Call super ctor
-	this.today = today;
-	if( this.today) {
+	this.text = text;
+	if( this.text) {
 		this.alignmentClass = 'text-center';
 	}
 }
 
 BoldDateCell.prototype.buildContents = function() {
 	var strong = document.createElement('strong');
-	if( this.today) {
-		strong.appendChild(document.createTextNode('Today'));
+	if( this.text) {
+		strong.appendChild(document.createTextNode(this.text));
 	} else {
 		strong.appendChild(DateCell.prototype.buildContents.apply(this, []));
 	}

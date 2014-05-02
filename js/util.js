@@ -42,3 +42,7 @@ util.removeChildren = function(parent) {
 util.getNumberWithCommas = function(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
+
+util.getSelected = function(id) {
+	return document.getElementById(id).selectedOptions[0].value
+};

@@ -12,7 +12,7 @@ function CurrencyCell(currency, useThousandsSeparators) {
 
 CurrencyCell.prototype.update = function(currency) {
 	this.currency = currency;
-	util.removeChildren(this.td);
+	util.removeChildren(this.contentHolder);
 	this.contentHolder.appendChild(this.buildContents());
 }
 

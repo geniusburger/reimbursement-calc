@@ -9,10 +9,6 @@ var rc = {};
 ////////     Constants
 //////////////////////////////////////////////////////////////////////////////////
 
-rc.DATE_START_TEXT = "Reimbursed";
-rc.DATE_STOP_TEXT = "Obligation Expired";
-rc.TODAY_TEXT = "Today";
-
 rc.DARK = '#272b30';
 rc.MID = '#2e3338';
 rc.LIGHT = '#49515a';
@@ -71,24 +67,6 @@ rc.CHART_OPTIONS = {
 ////////     Variables
 //////////////////////////////////////////////////////////////////////////////////
 
-/**
- * All of the reimbursements that have been added.
- * @type {Reimbursement[]}
- */
-rc.reimbursements = [];
-
-/**
- * All of the individual reimbursement events, this includes reimbursements and obligation expirations.
- * @type {ReimbursementEvent[]}
- */
-rc.reimbursementEvents = [];
-
-/**
- * The running total to display for each reimbursement event.
- * @type {number[]}
- */
-rc.runningAmount = [];
-
 rc.chartData = [];
 
 rc.chart = undefined;
@@ -102,12 +80,17 @@ rc.selection = [];
 rc.addDate = function(r) {
     if (r.isValid()) {
         dateRowUtil.add(r.startDate, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), new Currency(r.amountString));
+	    //todo save dates as cookies: util.setCookie("dates", cookie);
     }
     return r.isValid();
 };
 
 rc.clearDates = function() {
-    //todo clear all dates, keep in mind that removing one will also remove the pair
+	rowUtil.getRows().forEach(function(row){
+		if( row.isStart()) {
+			row.remove();
+		}
+	});
 };
 
 /**
@@ -121,148 +104,14 @@ rc.loadTestData = function() {
     rc.addDate(new Reimbursement("4/13/2012", "3658.51"));
     rc.addDate(new Reimbursement("12/21/2012", "775.00"));
     rc.addDate(new Reimbursement("6/28/2013", "4350.00"));
-
-    //rc.processReimbursements();
 };
 
 rc.getSelectedTimeAmount = function() {
-    return rc.getSelected('timeAmount');
+    return util.getSelected('timeAmount');
 };
 
 rc.getSelectedTimeUnit = function() {
-    return rc.getSelected('timeUnit');
-};
-
-rc.getSelected = function(id) {
-    return document.getElementById(id).selectedOptions[0].value
-};
-
-rc.sortByDate = function(a, b) {
-    return a.getDate() - b.getDate();
-};
-
-rc.processReimbursements = function() {
-    var cookie = null;
-    rc.reimbursementEvents = [];
-    rc.runningAmount = [];
-
-    for (var i = 0; i < rc.reimbursements.length; i++) {
-        rc.reimbursementEvents[rc.reimbursementEvents.length] = new ReimbursementEvent(rc.reimbursements[i], i, true);
-        rc.reimbursementEvents[rc.reimbursementEvents.length] = new ReimbursementEvent(rc.reimbursements[i], i, false);
-        if (cookie === null) {
-            cookie = "";
-        } else {
-            cookie += ":";
-        }
-        cookie += rc.reimbursements[i];
-    }
-
-    rc.reimbursementEvents.sort(rc.sortByDate);
-    var total = 0;
-    for (var i = 0; i < rc.reimbursementEvents.length; i++) {
-        if (rc.reimbursementEvents[i].isStart()) {
-            total += rc.reimbursementEvents[i].getAmount();
-        } else {
-            total -= rc.reimbursementEvents[i].getAmount();
-        }
-        rc.runningAmount[i] = total;
-    }
-
-    // Save dates in cookies
-    util.setCookie("dates", cookie);
-    rc.print();
-};
-
-rc.print = function() {
-
-    var table = document.getElementById("tableBody");
-    var rows = [];
-    util.removeChildren(table);
-
-    var lastTime = 0;
-    var now = new Date().getTime();
-    var printedToday = false;
-    for (var i = 0; i < rc.reimbursementEvents.length; i++) {
-        if (!printedToday && now > lastTime && now <= rc.reimbursementEvents[i].getDate().getTime()) {
-            rows.push(rc.buildTodayRow(i === 0 ? 0 : rc.runningAmount[i - 1]));
-            printedToday = true;
-        }
-
-        rows.push(rc.buildDateTableRow(rc.reimbursementEvents[i], rc.runningAmount[i], i));
-    }
-
-    if (!printedToday && rc.reimbursementEvents.length > 1) {
-        rows.push(rc.buildTodayRow(0));
-    }
-
-    if (rc.reimbursementEvents.length > 1) {
-        $("#testButton").addClass("hidden");
-        $("#clearButton").removeClass("hidden");
-    } else {
-        $("#testButton").removeClass("hidden");
-        $("#clearButton").addClass("hidden");
-    }
-    var options = {
-    	duration: 50
-    };
-    rows.forEach(function(tr, i) {
-    	var divs = $(tr.querySelectorAll('td>div'));
-    	$(divs).hide();
-    	table.appendChild(tr);
-    	window.setTimeout(function(){divs.slideDown(options);}, i * 50);
-    });
-
-    rc.drawChart();
-};
-
-rc.buildTodayRow = function(amount) {
-    var tr = rc.buildRow([
-    	new BoldTextCell(rc.TODAY_TEXT),
-    	new Cell(),
-    	new Cell(),
-    	new BoldCurrencyCell(amount),
-    	new Cell()
-    ]);
-    tr.className = "active";
-    return tr;
-};
-
-rc.buildDateTableRow = function(reimbursementEvent, amount, index) {
-    var tr = rc.buildRow( [
-    	new DateCell(reimbursementEvent.getDate()),
-    	new TextCell(reimbursementEvent.isStart() ? rc.DATE_START_TEXT : rc.DATE_STOP_TEXT),
-    	new CurrencyCell(reimbursementEvent.getAmount()),
-    	new CurrencyCell(amount),
-    	new ButtonCell(reimbursementEvent.index, rc.removeDate)
-    ]);
-    tr.dateIndex = reimbursementEvent.index;
-    tr.eventIndex = index;
-    tr.onmouseover = rc.hoverRowHandler;
-    tr.onmouseout = rc.unhoverRowHandler;
-    return tr;
-};
-
-rc.buildRow = function(cells) {
-	var tr = document.createElement("tr");
-	cells.forEach(function(cell){tr.appendChild(cell.buildCell());});
-	return tr;
-};
-
-/**
- * Handles mouseover events for table rows.
- * The tr element must have a dateIndex property defined that indicates which ReimbursementEvent it represents.
- * The matching event pair rows will be highlighted.
- */
-rc.hoverRowHandler = function() {
-    rc.highlightRows(this.dateIndex);
-}
-
-/**
- * Handles mouseout events for table rows. All rows will be unhighlighted.
- */
-rc.unhoverRowHandler = function() {
-    rc.chart.setSelection();
-    rc.unhighlightRows();
+    return util.getSelected('timeUnit');
 };
 
 /**
@@ -294,29 +143,8 @@ rc.selectPointHandler = function() {
  * Highlights the table rows for the pair of events relating to the specified Reimbursement.
  * @param  {number} dateIndex Index of the Reimbursement to highlight events for.
  */
-rc.highlightRows = function(dateIndex) {
-    rc.selection = [];
-    var first = true;
-    $("#tableBody").children("tr").each(function(index, el) {
-        if (el.dateIndex === dateIndex) {
-            if (first === true) {
-                first = false;
-                $(el).addClass("danger");
-                if( !rc.RED) {
-                    rc.RED = $(el).find("td").first().css('backgroundColor');
-                }
-            } else {
-                $(el).addClass("success");
-                if( !rc.GREEN) {
-                    rc.GREEN = $(el).find("td").first().css('backgroundColor');
-                }
-            }
-            rc.selection.push({row: this.eventIndex, column: 1});
-        } else {
-            $(el).removeClass("danger");
-            $(el).removeClass("success");
-        }
-    });
+rc.highlightPoints = function(dateIndex) {
+    //todo this used to where rows to be highlighted where calculated, then variables from there would be used tohighlight points
 
     rc.chart.setSelection(rc.selection);
     var selectedCircles = $("svg>g>g>g>circle");
@@ -344,14 +172,6 @@ rc.highlightRows = function(dateIndex) {
 rc.setSelectedPointColor = function(outerCircle, innerCircle, color) {
     $(outerCircle).attr("stroke", color);
     $(innerCircle).attr("fill", color);
-};
-
-/**
- * Unhighlights all rows in the event table.
- * @return {[type]} [description]
- */
-rc.unhighlightRows = function() {
-    $("#tableBody").children("tr").removeClass("danger").removeClass("success");
 };
 
 rc.enterCatch = function(e) {
@@ -480,8 +300,8 @@ rc.drawChart = function() {
 window.onload = function() {
 
 //    $("#inputButton").on('click', null, rc.getInput);
-//    $("#testButton").on('click', null, rc.loadTestData);
-//    $("#clearButton").on('click', null, rc.clearDates);
+    $("#testButton").on('click', null, rc.loadTestData);
+    $("#clearButton").on('click', null, rc.clearDates);
 //    $("#inputAmount").keypress(rc.enterCatch);
 //    $("#inputDate").keypress(rc.enterCatch);
 
@@ -490,7 +310,7 @@ window.onload = function() {
 
     rc.populateTimeAmounts('Years', 2);
 
-    if (window.location.protocol === 'file:' || window.location.hostname == 'localhost') {
+    if (window.isRunningLocally()) {
 	    console.log('loading');
         rc.loadTestData();
     } else {
@@ -517,6 +337,4 @@ window.onload = function() {
 
     $("#timeAmount").on('change', null, rc.timeAmountChanged);
     $("#timeUnit").on('change', null, rc.timeUnitChanged);
-
-    //rc.processReimbursements();
 };
