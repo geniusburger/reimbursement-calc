@@ -8,15 +8,15 @@ dateRowUtil = {
 		duration = Number(duration);
 		switch (unit) {
 			case "Days":
-				future.setDate(this.stopDate.getDate() + duration);
+				future.setDate(future.getDate() + duration);
 				break;
 			case "Months":
-				future.setMonth(this.stopDate.getMonth() + duration);
+				future.setMonth(future.getMonth() + duration);
 				break;
 			default:
 				console.log("Failed to find time unit, defaulting to years");
 			case "Years":
-				future.setFullYear(this.stopDate.getFullYear() + duration);
+				future.setFullYear(future.getFullYear() + duration);
 				break;
 		}
 
@@ -61,7 +61,7 @@ DateRow.prototype.build = function () {
 	return tr;
 };
 
-TodayRow.prototype.update = function(currency) {
+DateRow.prototype.update = function(currency) {
 	currency.add(this.amountCell.currency);
 	this.owedCell.update(currency);
 	return currency;

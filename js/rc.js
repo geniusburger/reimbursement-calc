@@ -101,23 +101,13 @@ rc.selection = [];
 
 rc.addDate = function(r) {
     if (r.isValid()) {
-        dateRowUtil.add(r.startDate, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), r.amountString);
+        dateRowUtil.add(r.startDate, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), new Currency(r.amountString));
     }
     return r.isValid();
 };
 
-rc.removeDate = function() {
-    rc.removeAt(this.dateIndex);
-}
-
-rc.removeAt = function(index) {
-    rc.reimbursements.splice(index, 1);
-    rc.processReimbursements();
-};
-
 rc.clearDates = function() {
-    rc.reimbursements = [];
-    rc.processReimbursements();
+    //todo clear all dates, keep in mind that removing one will also remove the pair
 };
 
 /**
@@ -132,7 +122,7 @@ rc.loadTestData = function() {
     rc.addDate(new Reimbursement("12/21/2012", "775.00"));
     rc.addDate(new Reimbursement("6/28/2013", "4350.00"));
 
-    rc.processReimbursements();
+    //rc.processReimbursements();
 };
 
 rc.getSelectedTimeAmount = function() {
@@ -407,17 +397,19 @@ rc.updateReimbursementTime = function() {
 }
 
 rc.timeAmountChanged = function() {
-    util.setCookie("timeAmount", this.selectedOptions[0].value);
-    rc.updateReimbursementTime();
-    rc.processReimbursements();
+	//todo handle time amount changed
+//    util.setCookie("timeAmount", this.selectedOptions[0].value);
+//    rc.updateReimbursementTime();
+//    rc.processReimbursements();
 };
 
 rc.timeUnitChanged = function() {
-    var unit = this.selectedOptions[0].value;
-    util.setCookie("timeUnit", unit);
-    rc.populateTimeAmounts(unit, rc.getSelectedTimeAmount());
-    rc.updateReimbursementTime();
-    rc.processReimbursements();
+	//todo handle time unit changed
+//    var unit = this.selectedOptions[0].value;
+//    util.setCookie("timeUnit", unit);
+//    rc.populateTimeAmounts(unit, rc.getSelectedTimeAmount());
+//    rc.updateReimbursementTime();
+//    rc.processReimbursements();
 };
 
 rc.populateTimeAmounts = function(unit, amount) {
@@ -487,18 +479,19 @@ rc.drawChart = function() {
 
 window.onload = function() {
 
-    $("#inputButton").on('click', null, rc.getInput);
-    $("#testButton").on('click', null, rc.loadTestData);
-    $("#clearButton").on('click', null, rc.clearDates);
-    $("#inputAmount").keypress(rc.enterCatch);
-    $("#inputDate").keypress(rc.enterCatch);
+//    $("#inputButton").on('click', null, rc.getInput);
+//    $("#testButton").on('click', null, rc.loadTestData);
+//    $("#clearButton").on('click', null, rc.clearDates);
+//    $("#inputAmount").keypress(rc.enterCatch);
+//    $("#inputDate").keypress(rc.enterCatch);
 
 	rowUtil.table = document.getElementById('dateTable');
 	todayRowUtil.add();
 
     rc.populateTimeAmounts('Years', 2);
 
-    if (window.location.protocol === 'file:') {
+    if (window.location.protocol === 'file:' || window.location.hostname == 'localhost') {
+	    console.log('loading');
         rc.loadTestData();
     } else {
         if (navigator.cookieEnabled !== true) {
@@ -525,5 +518,5 @@ window.onload = function() {
     $("#timeAmount").on('change', null, rc.timeAmountChanged);
     $("#timeUnit").on('change', null, rc.timeUnitChanged);
 
-    rc.processReimbursements();
+    //rc.processReimbursements();
 };

@@ -9,7 +9,12 @@ todayRowUtil = {
 TodayRow.prototype = Object.create(Row.prototype);
 
 function TodayRow() {
-    Row.apply(this, [new DateCell(new Date()), new CurrencyCell('0')]);
+    Row.apply(this, [
+	    new BoldDateCell(new Date(), true),
+	    new TextCell(''),
+	    new BoldCurrencyCell(new Currency('0')),
+	    new TextCell(''),
+	    new TextCell('')]);
 }
 
 TodayRow.prototype.build = function() {

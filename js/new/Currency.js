@@ -43,6 +43,9 @@ function Currency(amount) {
         if( !isNaN(amount)) {
             var parts = amount.split('.');
             this.dollars = parseInt(parts[0]);
+	        if( parts.length == 1) {
+		        parts.push('0');
+	        }
             this.cents = parseInt(parts[1]);
 
             // Check if no dollars/cents were included

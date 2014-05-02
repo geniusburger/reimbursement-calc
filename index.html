@@ -136,21 +136,22 @@
     <script type="text/javascript">
         <!--
         console.log(window.location.protocol);
-        if( window.location.protocol === 'file:') {
+        if( window.location.protocol === 'file:' || window.location.hostname === 'localhost') {
             document.writeln("<script src='js/util.js'></script>");
             document.writeln("<script src='js/reimbursement.js'></script>");
             document.writeln("<script src='js/reimbursementevent.js'></script>");
-            document.writeln("<script src='js/new/Currency.js'></script>");
-            document.writeln("<script src='js/new/DateRow.js'></script>");
-            document.writeln("<script src='js/new/Row.js'></script>");
-            document.writeln("<script src='js/new/TodayRow.js'></script>");
-            document.writeln("<script src='js/cell/BoldCurrencyCell.js'></script>");
-            document.writeln("<script src='js/cell/BoldTextCell.js'></script>");
-            document.writeln("<script src='js/cell/ButtonCell.js'></script>");
             document.writeln("<script src='js/cell/Cell.js'></script>");
+            document.writeln("<script src='js/cell/ButtonCell.js'></script>");
             document.writeln("<script src='js/cell/CurrencyCell.js'></script>");
             document.writeln("<script src='js/cell/DateCell.js'></script>");
+            document.writeln("<script src='js/cell/BoldDateCell.js'></script>");
             document.writeln("<script src='js/cell/TextCell.js'></script>");
+            document.writeln("<script src='js/cell/BoldCurrencyCell.js'></script>");
+            document.writeln("<script src='js/cell/BoldTextCell.js'></script>");
+            document.writeln("<script src='js/new/Currency.js'></script>");
+            document.writeln("<script src='js/new/Row.js'></script>");
+            document.writeln("<script src='js/new/DateRow.js'></script>");
+            document.writeln("<script src='js/new/TodayRow.js'></script>");
             document.writeln("<script src='js/rc.js'></script>");
         } else {
             document.writeln("<script src='js/master.min.js'></script>");

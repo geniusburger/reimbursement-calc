@@ -1,10 +1,8 @@
 
 ButtonCell.prototype = Object.create(Cell.prototype);
 
-function ButtonCell(dateIndex, onclick) {
+function ButtonCell() {
 	Cell.apply(this, arguments);
-	this.dateIndex = dateIndex;
-	this.onclick = onclick;
 }
 
 ButtonCell.prototype.buildContents = function() {
@@ -13,7 +11,6 @@ ButtonCell.prototype.buildContents = function() {
     button.className = "close";
     button.setAttribute("aria-hidden", "true");
     button.innerHTML = "&times;";
-    button.dateIndex = this.dateIndex;
     $(button).click(this.onclick);
     return button;
 };
