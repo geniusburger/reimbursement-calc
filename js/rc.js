@@ -307,6 +307,8 @@ window.onload = function() {
 
 	rowUtil.table = document.getElementById('tableBody');
 	todayRowUtil.add();
+	var rows = rowUtil.getRows();
+	rows[0].row.fixWidth();
 
     rc.populateTimeAmounts('Years', 2);
 
