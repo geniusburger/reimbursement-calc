@@ -78,10 +78,9 @@ rc.selection = [];
 //////////////////////////////////////////////////////////////////////////////////
 
 rc.addDate = function(date, amount) {
-    dateRowUtil.add(date, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), new Currency(amount));
+    dateRowUtil.add(date, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), amount));
 	$("#testButton").addClass("hidden");
 	$("#clearButton").removeClass("hidden");
-    //todo save dates as cookies: util.setCookie("dates", cookie);
 };
 
 rc.clearDates = function() {
@@ -97,13 +96,19 @@ rc.clearDates = function() {
  * Load example/test data.
  */
 rc.loadTestData = function() {
-    rc.addDate(new Date("7/6/2012"), "7802.05");
-    rc.addDate(new Date("2/1/2013"), "6931.49");
-    rc.addDate(new Date("4/12/2013"), "7568.49");
-    rc.addDate(new Date("1/6/2012"), "3802.00");
-    rc.addDate(new Date("4/13/2012"), "3658.51");
-    rc.addDate(new Date("12/21/2012"), "775.00");
-    rc.addDate(new Date("6/28/2013"), "4350.00");
+    rc.addDate(new Date("7/6/2012"), new Currency("7802.05"));
+    rc.addDate(new Date("2/1/2013"), new Currency("6931.49"));
+    rc.addDate(new Date("4/12/2013"), new Currency("7568.49"));
+    rc.addDate(new Date("1/6/2012"), new Currency("3802.00"));
+    rc.addDate(new Date("4/13/2012"), new Currency("3658.51"));
+    rc.addDate(new Date("12/21/2012"), new Currency("775.00"));
+    rc.addDate(new Date("6/28/2013"), new Currency("4350.00"));
+
+	rc.saveDates();
+};
+
+rc.saveDates = function() {
+	//todo save dates as cookies: util.setCookie("dates", cookie);
 };
 
 rc.getSelectedTimeAmount = function() {
@@ -182,30 +187,35 @@ rc.enterCatch = function(e) {
 
 rc.getInput = function() {
     $("#inputButton").blur();
-    var date = $("#inputDate");
-    var amount = $("#inputAmount");
-    var r = new Reimbursement(date.val(), amount.val());
+    var dateInput = $("#inputDate");
+    var amountInput = $("#inputAmount");
+	var date = new Date(dateInput.val());
+    var amount = new Currency(amountInput.val());
+	var valid = true;
 
-    if (rc.addDate(r) === true) {
-        date.val("");
-        amount.val("");
-        rc.processReimbursements();
-        date.focus();
-    }
-
-    if (r.isInvalidAmount()) {
-        amount.parent().addClass("has-error");
-        amount.focus();
+    if (!amount.valid) {
+	    valid = false;
+	    amountInput.parent().addClass("has-error");
+	    amountInput.focus();
     } else {
-        amount.parent().removeClass("has-error");
+	    amountInput.parent().removeClass("has-error");
     }
 
-    if (r.isInvalidDate()) {
-        date.parent().addClass("has-error");
-        date.focus();
+    if (util.isInvalidDate(date)) {
+	    valid = false;
+	    dateInput.parent().addClass("has-error");
+	    dateInput.focus();
     } else {
-        date.parent().removeClass("has-error");
+	    dateInput.parent().removeClass("has-error");
     }
+
+	if (valid) {
+		dateInput.val("");
+		amountInput.val("");
+		rc.addDate(date, amount);
+		rc.saveDates();
+		dateInput.focus();
+	}
     return false;
 }
 
@@ -299,11 +309,11 @@ rc.drawChart = function() {
 
 window.onload = function() {
 
-//    $("#inputButton").on('click', null, rc.getInput);
+    $("#inputButton").on('click', null, rc.getInput);
     $("#testButton").on('click', null, rc.loadTestData);
     $("#clearButton").on('click', null, rc.clearDates);
-//    $("#inputAmount").keypress(rc.enterCatch);
-//    $("#inputDate").keypress(rc.enterCatch);
+    $("#inputAmount").keypress(rc.enterCatch);
+    $("#inputDate").keypress(rc.enterCatch);
 
 	rowUtil.table = document.getElementById('tableBody');
 	todayRowUtil.add();
@@ -332,7 +342,7 @@ window.onload = function() {
             var dates = datesCookie.split(":");
             for (var i = 0; i < dates.length; i++) {
                 var values = dates[i].split("@");
-                rc.addDate(new Reimbursement(values[1], values[0]));
+                rc.addDate(new Date(values[1]), new Currency(values[0]));
             }
         }
     }

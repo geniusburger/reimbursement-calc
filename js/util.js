@@ -46,3 +46,7 @@ util.getNumberWithCommas = function(num) {
 util.getSelected = function(id) {
 	return document.getElementById(id).selectedOptions[0].value
 };
+
+util.isInvalidDate = function(date) {
+	return isNaN(date.getTime());
+};
