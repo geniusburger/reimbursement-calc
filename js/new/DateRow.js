@@ -29,6 +29,21 @@ dateRowUtil = {
 		rowUtil.add(startRow);
 		rowUtil.add(stopRow);
 		rowUtil.updateOwed();
+	},
+	getDateRows: function(){return document.querySelectorAll('#tableBody tr.date-row');},
+	getCookieString: function() {
+		var datesCookie = '';
+		var rows = dateRowUtil.getDateRows();
+		for( var i = 0; i < rows.length; i++) {
+			var row = rows[i].row;
+			if( row.isStart()) {
+				if (i > 0) {
+					datesCookie += ':';
+				}
+				datesCookie += row.amountCell.toString() + '@' + row.dateCell.toString();
+			}
+		}
+		return datesCookie;
 	}
 };
 
@@ -36,6 +51,7 @@ DateRow.prototype = Object.create(Row.prototype);
 
 function DateRow(date, amount) {
 	Row.apply(this, [
+		'date-row',
 		new DateCell(date),
 		new CurrencyCell(amount),
 		new CurrencyCell('0'),
@@ -53,6 +69,7 @@ DateRow.prototype.pair = function(matchingRow, start) {
 DateRow.prototype.remove = function () {
 	$([this.tr,this.matchingRow.tr]).remove();
 	rowUtil.updateOwed();
+	rc.saveDates();
 	if( rowUtil.getRows().length < 2) {
 		$("#testButton").removeClass("hidden");
 		$("#clearButton").addClass("hidden");

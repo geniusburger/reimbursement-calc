@@ -19,3 +19,7 @@ CurrencyCell.prototype.update = function(currency) {
 CurrencyCell.prototype.buildContents = function() {
 	return document.createTextNode(this.currency.toString());
 };
+
+CurrencyCell.prototype.toString = function() {
+	return this.currency.toString();
+}

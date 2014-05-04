@@ -78,16 +78,33 @@ rc.selection = [];
 //////////////////////////////////////////////////////////////////////////////////
 
 rc.addDate = function(date, amount) {
-    dateRowUtil.add(date, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), amount));
+    dateRowUtil.add(date, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), amount);
 	$("#testButton").addClass("hidden");
 	$("#clearButton").removeClass("hidden");
 };
 
-rc.clearDates = function() {
+rc.clearDates = function(doNotSave) {
 	var trs = rowUtil.getRows();
 	for( var i = 0; i < trs.length; i++) {
 		if( trs[i].row.isStart()) {
 			trs[i].row.remove();
+		}
+	}
+	if( !doNotSave) {
+		rc.saveDates();
+	}
+};
+
+rc.loadDatesFromCookie = function(cookie) {
+	if( typeof cookie === 'undefined') {
+		cookie = util.getCookie('dates');
+	}
+
+	if (cookie !== null && cookie !== "") {
+		var dates = cookie.split(":");
+		for (var i = 0; i < dates.length; i++) {
+			var values = dates[i].split("@");
+			rc.addDate(new Date(values[1]), new Currency(values[0]));
 		}
 	}
 };
@@ -96,19 +113,22 @@ rc.clearDates = function() {
  * Load example/test data.
  */
 rc.loadTestData = function() {
-    rc.addDate(new Date("7/6/2012"), new Currency("7802.05"));
-    rc.addDate(new Date("2/1/2013"), new Currency("6931.49"));
-    rc.addDate(new Date("4/12/2013"), new Currency("7568.49"));
-    rc.addDate(new Date("1/6/2012"), new Currency("3802.00"));
-    rc.addDate(new Date("4/13/2012"), new Currency("3658.51"));
-    rc.addDate(new Date("12/21/2012"), new Currency("775.00"));
-    rc.addDate(new Date("6/28/2013"), new Currency("4350.00"));
+    [["7/6/2012", "$7802.05"],
+    ["2/1/2013", "$6931.49"],
+    ["4/12/2013", "$7568.49"],
+    ["1/6/2012", "$3802.00"],
+    ["4/13/2012", "$3658.51"],
+    ["12/21/2012", "$775.00"],
+    ["6/28/2013", "$4350.00"]]
+	.forEach(function(date){
+		rc.addDate(new Date(date[0]), new Currency(date[1]));
+	});
 
 	rc.saveDates();
 };
 
 rc.saveDates = function() {
-	//todo save dates as cookies: util.setCookie("dates", cookie);
+	util.setCookie('dates', dateRowUtil.getCookieString());
 };
 
 rc.getSelectedTimeAmount = function() {
@@ -220,26 +240,19 @@ rc.getInput = function() {
 }
 
 rc.updateReimbursementTime = function() {
-    for (var i = 0; i < rc.reimbursements.length; i++) {
-        var old = rc.reimbursements[i];
-        rc.reimbursements[i] = new Reimbursement(old.startDate, old.amountString);
-    }
+    var dates = dateRowUtil.getCookieString();
+	rc.clearDates(true);
+	rc.loadDatesFromCookie(dates);
 }
 
 rc.timeAmountChanged = function() {
-	//todo handle time amount changed
-//    util.setCookie("timeAmount", this.selectedOptions[0].value);
-//    rc.updateReimbursementTime();
-//    rc.processReimbursements();
+    util.setCookie("timeAmount", this.selectedOptions[0].value);
+    rc.updateReimbursementTime();
 };
 
 rc.timeUnitChanged = function() {
-	//todo handle time unit changed
-//    var unit = this.selectedOptions[0].value;
-//    util.setCookie("timeUnit", unit);
-//    rc.populateTimeAmounts(unit, rc.getSelectedTimeAmount());
-//    rc.updateReimbursementTime();
-//    rc.processReimbursements();
+    util.setCookie("timeUnit", this.selectedOptions[0].value);
+    rc.updateReimbursementTime();
 };
 
 rc.populateTimeAmounts = function(unit, amount) {
@@ -337,14 +350,7 @@ window.onload = function() {
             rc.populateTimeAmounts(timeUnitCookie, timeAmountCookie);
         }
 
-        var datesCookie = util.getCookie("dates");
-        if (datesCookie !== null && datesCookie !== "") {
-            var dates = datesCookie.split(":");
-            for (var i = 0; i < dates.length; i++) {
-                var values = dates[i].split("@");
-                rc.addDate(new Date(values[1]), new Currency(values[0]));
-            }
-        }
+		rc.loadDatesFromCookie();
     }
 
     $("#timeAmount").on('change', null, rc.timeAmountChanged);

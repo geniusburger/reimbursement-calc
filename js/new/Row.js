@@ -29,7 +29,8 @@ rowUtil = {
 	}
 };
 
-function Row( dateCell, amountCell, owedCell, typeCell, buttonCell) {
+function Row( className, dateCell, amountCell, owedCell, typeCell, buttonCell) {
+	this.className = className;
 	this.dateCell = dateCell;
 	this.amountCell = amountCell;
 	this.owedCell = owedCell;
@@ -40,6 +41,7 @@ function Row( dateCell, amountCell, owedCell, typeCell, buttonCell) {
 Row.prototype.build = function() {
 	var tr = document.createElement('tr');
 	tr.row = this;
+	tr.className = this.className;
 	this.cells.forEach(function(cell){tr.appendChild(cell.buildCell())});
 	this.tr = tr;
 	return tr;
