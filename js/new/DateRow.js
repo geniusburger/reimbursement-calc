@@ -64,14 +64,17 @@ DateRow.prototype.pair = function(matchingRow) {
 	this.matchingRow = matchingRow;
 };
 
-DateRow.prototype.remove = function () {
+DateRow.prototype.remove = function (doNotSave) {
 	$([this.tr,this.matchingRow.tr]).remove();
 	rowUtil.updateOwed();
-	rc.saveDates();
 	if( rowUtil.getRows().length < 2) {
 		$("#testButton").removeClass("hidden");
 		$("#clearButton").addClass("hidden");
 	}
+	if( !doNotSave) {
+		rc.saveDates();
+	}
+	rc.drawChart();
 };
 
 DateRow.prototype.highlight = function (enable, recursive) {

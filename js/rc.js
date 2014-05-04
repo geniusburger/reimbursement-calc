@@ -84,7 +84,7 @@ rc.addDate = function(date, amount) {
 rc.clearDates = function(doNotSave) {
 	var trs = dateRowUtil.getStartRows();
 	for( var i = 0; i < trs.length; i++) {
-		trs[i].row.remove();
+		trs[i].row.remove(true);
 	}
 	if( !doNotSave) {
 		rc.saveDates();
@@ -103,6 +103,8 @@ rc.loadDatesFromCookie = function(cookie) {
 			rc.addDate(new Date(values[1]), new Currency(values[0]));
 		}
 	}
+
+	rc.drawChart();
 };
 
 /**
@@ -121,6 +123,7 @@ rc.loadTestData = function() {
 	});
 
 	rc.saveDates();
+	rc.drawChart();
 };
 
 rc.saveDates = function() {
@@ -175,18 +178,18 @@ rc.highlightPoints = function(row) {
 	var todayIndex = todayRowUtil.row.tr.rowIndex-1;
 
 	// Skip today row
-	if( startIndex > todayIndex) {
-		startIndex--;
-		if( stopIndex > todayIndex) {
-			stopIndex--;
+	if( stopIndex > todayIndex) {
+		stopIndex--;
+		if( startIndex > todayIndex) {
+			startIndex--;
 		}
 	}
 
 	if( !rc.START_COLOR) {
-		rc.START_COLOR = start.tr.style.backgroundColor;
+		rc.START_COLOR = $(start.tr).css('backgroundColor');
 	}
 	if( !rc.STOP_COLOR) {
-		rc.STOP_COLOR = stop.tr.style.backgroundColor;
+		rc.STOP_COLOR = $(stop.tr).css('backgroundColor');
 	}
 
     rc.chart.setSelection([
@@ -255,6 +258,7 @@ rc.getInput = function() {
 		amountInput.val("");
 		rc.addDate(date, amount);
 		rc.saveDates();
+		rc.drawChart();
 		dateInput.focus();
 	}
     return false;
@@ -328,7 +332,7 @@ rc.drawChart = function() {
             rc.chartData[0] = ['Date', 'Owed'];
             for( var i = 0; i < rows.length; i++) {
                 rc.chartData[i+1] = [rows[i].row.dateCell.date,
-                    {v: rows[i].row.owedCell.currency.toFloat(), f: rows[i].row.toString()}];
+                    {v: rows[i].row.owedCell.currency.toFloat(), f: rows[i].row.owedCell.currency.toString()}];
             }
             var data = google.visualization.arrayToDataTable(rc.chartData);
 
@@ -374,6 +378,4 @@ window.onload = function() {
 
     $("#timeAmount").on('change', null, rc.timeAmountChanged);
     $("#timeUnit").on('change', null, rc.timeUnitChanged);
-
-	rc.drawChart();
 };

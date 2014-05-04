@@ -173,5 +173,5 @@ Currency.prototype.toString = function() {
 };
 
 Currency.prototype.toFloat = function() {
-	return parseFloat(this.getDollarsString() + '.' + this.getCentsString());
+	return parseFloat(this.dollars + '.' + this.cents);
 }
