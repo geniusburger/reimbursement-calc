@@ -20,11 +20,11 @@ dateRowUtil = {
 				break;
 		}
 
-		var startRow = new DateRow(date, amount);
-		var stopRow = new DateRow(future, new Currency(amount));
+		var startRow = new DateRow(date, amount, true);
+		var stopRow = new DateRow(future, new Currency(amount), false);
 
-		startRow.pair(stopRow, true);
-		stopRow.pair(startRow, false);
+		startRow.pair(stopRow);
+		stopRow.pair(startRow);
 
 		rowUtil.add(startRow);
 		rowUtil.add(stopRow);
@@ -49,21 +49,20 @@ dateRowUtil = {
 
 DateRow.prototype = Object.create(Row.prototype);
 
-function DateRow(date, amount) {
+function DateRow(date, amount, start) {
 	Row.apply(this, [
-		'date-row',
+		'date-row ' + (start ? 'start' : 'stop'),
 		new DateCell(date),
 		new CurrencyCell(amount),
 		new CurrencyCell('0'),
 		new TextCell(amount.start ? dateRowUtil.DATE_START_TEXT : dateRowUtil.DATE_STOP_TEXT),
 		new ButtonCell()]);
-	this.highlightClass = amount.start ? 'danger' : 'success';
 	this.matchingRow = undefined;
+	this.amountCell.currency.start = start;
 };
 
-DateRow.prototype.pair = function(matchingRow, start) {
+DateRow.prototype.pair = function(matchingRow) {
 	this.matchingRow = matchingRow;
-	this.amountCell.currency.start = start;
 };
 
 DateRow.prototype.remove = function () {
@@ -78,9 +77,9 @@ DateRow.prototype.remove = function () {
 
 DateRow.prototype.highlight = function (enable, recursive) {
 	if(enable) {
-		$(this.tr).addClass(this.highlightClass);
+		$(this.tr).addClass('highlight');
 	} else {
-		$(this.tr).removeClass(this.highlightClass);
+		$(this.tr).removeClass('highlight');
 	}
 
 	if( recursive) {
