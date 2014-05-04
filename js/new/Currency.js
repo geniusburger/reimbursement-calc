@@ -171,3 +171,7 @@ Currency.prototype.getCentsString = function() {
 Currency.prototype.toString = function() {
   return '$' + this.getDollarsString() + '.' + this.getCentsString();
 };
+
+Currency.prototype.toFloat = function() {
+	return parseFloat(this.getDollarsString() + '.' + this.getCentsString());
+}

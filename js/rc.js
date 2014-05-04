@@ -71,8 +71,6 @@ rc.chartData = [];
 
 rc.chart = undefined;
 
-rc.selection = [];
-
 //////////////////////////////////////////////////////////////////////////////////
 ////////     Functions
 //////////////////////////////////////////////////////////////////////////////////
@@ -84,11 +82,9 @@ rc.addDate = function(date, amount) {
 };
 
 rc.clearDates = function(doNotSave) {
-	var trs = rowUtil.getRows();
+	var trs = dateRowUtil.getStartRows();
 	for( var i = 0; i < trs.length; i++) {
-		if( trs[i].row.isStart()) {
-			trs[i].row.remove();
-		}
+		trs[i].row.remove();
 	}
 	if( !doNotSave) {
 		rc.saveDates();
@@ -168,10 +164,35 @@ rc.selectPointHandler = function() {
  * Highlights the table rows for the pair of events relating to the specified Reimbursement.
  * @param  {number} dateIndex Index of the Reimbursement to highlight events for.
  */
-rc.highlightPoints = function(dateIndex) {
-    //todo this used to where rows to be highlighted where calculated, then variables from there would be used tohighlight points
+rc.highlightPoints = function(row) {
 
-    rc.chart.setSelection(rc.selection);
+	var start = row.isStart() ? row : row.matchingRow;
+	var stop = start.matchingRow;
+
+	// Subtract 1 from indexes to account for the header row
+	var startIndex = start.tr.rowIndex-1;
+	var stopIndex = stop.tr.rowIndex-1;
+	var todayIndex = todayRowUtil.row.tr.rowIndex-1;
+
+	// Skip today row
+	if( startIndex > todayIndex) {
+		startIndex--;
+		if( stopIndex > todayIndex) {
+			stopIndex--;
+		}
+	}
+
+	if( !rc.START_COLOR) {
+		rc.START_COLOR = start.style.backgroundColor;
+	}
+	if( !rc.STOP_COLOR) {
+		rc.STOP_COLOR = stop.style.backgroundColor;
+	}
+
+    rc.chart.setSelection([
+	    {row: startIndex, column: 1},
+	    {row: stopIndex, column: 1}]);
+
     var selectedCircles = $("svg>g>g>g>circle");
     var d = [];
     for( var i = 0; i < selectedCircles.length; i++) {
@@ -190,8 +211,8 @@ rc.highlightPoints = function(dateIndex) {
         }
         green2 = 6;
     }
-    rc.setSelectedPointColor(selectedCircles[red1], selectedCircles[red2], rc.RED);
-    rc.setSelectedPointColor(selectedCircles[green1], selectedCircles[green2], rc.GREEN);
+    rc.setSelectedPointColor(selectedCircles[red1], selectedCircles[red2], rc.START_COLOR);
+    rc.setSelectedPointColor(selectedCircles[green1], selectedCircles[green2], rc.STOP_COLOR);
 };
 
 rc.setSelectedPointColor = function(outerCircle, innerCircle, color) {
@@ -298,22 +319,24 @@ rc.drawChart = function() {
             google.visualization.events.addListener(rc.chart, 'onmouseover', rc.hoverPointHandler);
             google.visualization.events.addListener(rc.chart, 'onmouseout', rc.unhoverPointHandler);
         }
-
-        if( rc.reimbursementEvents.length === 0) {
+		var rows = dateRowUtil.getDateRows();
+        if( rows.length === 0) {
             $("#chart").addClass("hidden");
         } else {
             $("#chart").removeClass("hidden");
             rc.chartData = [];
             rc.chartData[0] = ['Date', 'Owed'];
-            for( var i = 0; i < rc.reimbursementEvents.length; i++) {
-                rc.chartData[i+1] = [rc.reimbursementEvents[i].getDate(),
-                    {v: rc.runningAmount[i]/100, f: new CurrencyCell(rc.runningAmount[i]).toString() }];
+            for( var i = 0; i < rows.length; i++) {
+                rc.chartData[i+1] = [rows[i].row.dateCell.date,
+                    {v: rows[i].row.toFloat(), f: rows[i].row.toString()}];
             }
             var data = google.visualization.arrayToDataTable(rc.chartData);
 
             rc.chart.draw(data, rc.CHART_OPTIONS);
         }
     }
+
+	rc.drawChart();
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -330,8 +353,6 @@ window.onload = function() {
 
 	rowUtil.table = document.getElementById('tableBody');
 	todayRowUtil.add();
-	var rows = rowUtil.getRows();
-	rows[0].row.fixWidth();
 
     rc.populateTimeAmounts('Years', 2);
 

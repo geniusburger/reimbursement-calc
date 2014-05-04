@@ -1,11 +1,14 @@
 todayRowUtil = {
 	TODAY_TEXT: 'Today',
 	exists: false,
+	row: undefined,
 	add: function() {
 		if( !todayRowUtil.exists) {
-			rowUtil.add(new TodayRow());
+			todayRowUtil.row = new TodayRow();
+			rowUtil.add(todayRowUtil.row);
 			rowUtil.updateOwed();
 			todayRowUtil.exists = true;
+			todayRowUtil.row.fixWidth();
 		}
 	}
 };

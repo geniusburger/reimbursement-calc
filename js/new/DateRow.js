@@ -1,8 +1,8 @@
 dateRowUtil = {
 	DATE_START_TEXT: "Reimbursed",
 	DATE_STOP_TEXT: "Obligation Expired",
-	onmouseover: function() {this.row.highlight(true, true);},
-	onmouseout: function() {this.row.highlight(false, true);},
+	onMouseOver: function() {console.log('over',this);this.row.highlight(true, true); rc.highlightPoints(this.row);},
+	onMouseOut: function() {this.row.highlight(false, true); rc.chart.setSelection();},
 	add: function(date, duration, unit, amount) {
 		var future = new Date(date);
 		duration = Number(duration);
@@ -31,17 +31,16 @@ dateRowUtil = {
 		rowUtil.updateOwed();
 	},
 	getDateRows: function(){return document.querySelectorAll('#tableBody tr.date-row');},
+	getStartRows: function(){return document.querySelectorAll('#tableBody tr.date-row.start')},
 	getCookieString: function() {
 		var datesCookie = '';
-		var rows = dateRowUtil.getDateRows();
+		var rows = dateRowUtil.getStartRows();
 		for( var i = 0; i < rows.length; i++) {
 			var row = rows[i].row;
-			if( row.isStart()) {
-				if (i > 0) {
-					datesCookie += ':';
-				}
-				datesCookie += row.amountCell.toString() + '@' + row.dateCell.toString();
+			if (i > 0) {
+				datesCookie += ':';
 			}
+			datesCookie += row.amountCell.toString() + '@' + row.dateCell.toString();
 		}
 		return datesCookie;
 	}
@@ -59,7 +58,7 @@ function DateRow(date, amount, start) {
 		new ButtonCell()]);
 	this.matchingRow = undefined;
 	this.amountCell.currency.start = start;
-};
+}
 
 DateRow.prototype.pair = function(matchingRow) {
 	this.matchingRow = matchingRow;
@@ -89,8 +88,8 @@ DateRow.prototype.highlight = function (enable, recursive) {
 
 DateRow.prototype.build = function () {
 	var tr = Row.prototype.build.apply(this, []);
-	tr.onmouseover = dateRowUtil.onmouseover;
-	tr.onmouseout = dateRowUtil.onmouseout;
+	tr.onmouseover = dateRowUtil.onMouseOver;
+	tr.onmouseout = dateRowUtil.onMouseOut;
 	return tr;
 };
 
