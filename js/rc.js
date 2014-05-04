@@ -183,10 +183,10 @@ rc.highlightPoints = function(row) {
 	}
 
 	if( !rc.START_COLOR) {
-		rc.START_COLOR = start.style.backgroundColor;
+		rc.START_COLOR = start.tr.style.backgroundColor;
 	}
 	if( !rc.STOP_COLOR) {
-		rc.STOP_COLOR = stop.style.backgroundColor;
+		rc.STOP_COLOR = stop.tr.style.backgroundColor;
 	}
 
     rc.chart.setSelection([
@@ -328,15 +328,13 @@ rc.drawChart = function() {
             rc.chartData[0] = ['Date', 'Owed'];
             for( var i = 0; i < rows.length; i++) {
                 rc.chartData[i+1] = [rows[i].row.dateCell.date,
-                    {v: rows[i].row.toFloat(), f: rows[i].row.toString()}];
+                    {v: rows[i].row.owedCell.currency.toFloat(), f: rows[i].row.toString()}];
             }
             var data = google.visualization.arrayToDataTable(rc.chartData);
 
             rc.chart.draw(data, rc.CHART_OPTIONS);
         }
     }
-
-	rc.drawChart();
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -376,4 +374,6 @@ window.onload = function() {
 
     $("#timeAmount").on('change', null, rc.timeAmountChanged);
     $("#timeUnit").on('change', null, rc.timeUnitChanged);
+
+	rc.drawChart();
 };

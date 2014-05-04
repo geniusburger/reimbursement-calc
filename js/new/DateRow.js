@@ -1,7 +1,7 @@
 dateRowUtil = {
 	DATE_START_TEXT: "Reimbursed",
 	DATE_STOP_TEXT: "Obligation Expired",
-	onMouseOver: function() {console.log('over',this);this.row.highlight(true, true); rc.highlightPoints(this.row);},
+	onMouseOver: function() {this.row.highlight(true, true); rc.highlightPoints(this.row);},
 	onMouseOut: function() {this.row.highlight(false, true); rc.chart.setSelection();},
 	add: function(date, duration, unit, amount) {
 		var future = new Date(date);
