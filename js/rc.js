@@ -145,14 +145,20 @@ rc.getSelectedTimeUnit = function() {
  */
 rc.hoverPointHandler = function(point) {
     rc.lastPoint = point;
-    rc.highlightRows(rc.reimbursementEvents[point.row].index);
+	var rows = dateRowUtil.getDateRows();
+	rows[point.row].row.highlight(true, true);
+	rc.highlightPoints(rows[point.row].row);
 };
 
 /**
  * Handles mouseout events for points on the chart. All rows will be unhighlighted.
  */
 rc.unhoverPointHandler = function() {
-    rc.unhighlightRows();
+    var rows = dateRowUtil.getStartRows();
+	for( var i = 0; i < rows.length; i++) {
+		rows[i].row.highlight(false, true);
+	}
+	rc.chart.setSelection();
 };
 
 /**
@@ -160,7 +166,9 @@ rc.unhoverPointHandler = function() {
  * The last hovered point will be rehighlighted since any click will results in a deselection of a highlighted point.
  */
 rc.selectPointHandler = function() {
-    rc.highlightRows(rc.reimbursementEvents[rc.lastPoint.row].index);
+	var rows = dateRowUtil.getDateRows();
+	rows[rc.lastPoint.row].row.highlight(true, true);
+	rc.highlightPoints(rows[rc.lastPoint.row].row);
 };
 
 /**
