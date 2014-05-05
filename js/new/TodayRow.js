@@ -32,10 +32,8 @@ TodayRow.prototype.update = function(currency) {
 
 TodayRow.prototype.fixWidth = function() {
 	var newWidth = this.amountCell.td.offsetWidth + 'px';
-	console.log('newWidth', newWidth);
 	this.owedCell.td.style.minWidth = newWidth;
 
 	newWidth = this.typeCell.td.offsetWidth + 'px';
-	console.log('newWidth', newWidth);
 	this.dateCell.td.style.minWidth = newWidth;
 };
