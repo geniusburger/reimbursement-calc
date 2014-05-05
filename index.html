@@ -19,6 +19,7 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
+        chartIsReady = false;
         google.load("visualization", "1", {packages:["corechart"]});
         google.setOnLoadCallback(function(){chartIsReady = true;});
     </script>
@@ -126,7 +127,7 @@
             <p class="text-center">FYI, dates are automatically stored between sessions using cookies.</p>
             <p class="text-center">
                 Source code available on 
-                <a class="btn btn-default btn-sm" href="https://github.com/geniusburger/reimbursement-calc" target="_blank">
+                <a class="btn btn-default btn-sm" href="https://github.com/geniusburger/reimbursement-calc/tree/gh-pages" target="_blank">
                     <img id="githubImg" src="./images/GitHub-Mark-Light-32px.png" height="16" width="16"> GitHub
                 </a>
             </p>
@@ -134,10 +135,26 @@
     </div>
 
     <script type="text/javascript">
+        console.log(window.location.protocol + window.location.hostname);
+        window.isRunningLocally = function() {return window.location.protocol === 'file:' || window.location.hostname === 'localhost';}
         <!--
-        console.log(window.location.protocol);
-        if( window.location.protocol === 'file:') {
-            document.writeln("<script src='js/master.js'></script>");
+        if( window.isRunningLocally()) {
+            document.writeln("<script src='js/util.js'></script>");
+            document.writeln("<script src='js/new/CookieManager.js'></script>");
+            document.writeln("<script src='js/cell/Cell.js'></script>");
+            document.writeln("<script src='js/cell/ButtonCell.js'></script>");
+            document.writeln("<script src='js/cell/CurrencyCell.js'></script>");
+            document.writeln("<script src='js/cell/DateCell.js'></script>");
+            document.writeln("<script src='js/cell/BoldDateCell.js'></script>");
+            document.writeln("<script src='js/cell/TextCell.js'></script>");
+            document.writeln("<script src='js/cell/InvisibleTextCell.js'></script>");
+            document.writeln("<script src='js/cell/BoldCurrencyCell.js'></script>");
+            document.writeln("<script src='js/cell/BoldTextCell.js'></script>");
+            document.writeln("<script src='js/new/Currency.js'></script>");
+            document.writeln("<script src='js/new/Row.js'></script>");
+            document.writeln("<script src='js/new/TodayRow.js'></script>");
+            document.writeln("<script src='js/new/DateRow.js'></script>");
+            document.writeln("<script src='js/rc.js'></script>");
         } else {
             document.writeln("<script src='js/master.min.js'></script>");
         }
