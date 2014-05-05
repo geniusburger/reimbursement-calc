@@ -136,9 +136,9 @@
 
     <script type="text/javascript">
         console.log(window.location.protocol + window.location.hostname);
-        window.isRunningLocally = function() {return true;};//window.location.protocol === 'file:' || window.location.hostname === 'localhost';}
+        window.isRunningLocally = function() {return window.location.protocol === 'file:' || window.location.hostname === 'localhost';}
         <!--
-        if( window.isRunningLocally()) {
+        if( true){//window.isRunningLocally()) {
             document.writeln("<script src='js/util.js'></script>");
             document.writeln("<script src='js/new/CookieManager.js'></script>");
             document.writeln("<script src='js/cell/Cell.js'></script>");

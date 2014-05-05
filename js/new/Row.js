@@ -16,15 +16,16 @@ rowUtil = {
 		var trs = rowUtil.getRows();
 		var added = false;
 		var time = row.dateCell.date.getTime();
+        var tr = row.build();
 		for( var i = 0; i < trs.length; i++) {
 			if( time < trs[i].row.dateCell.date.getTime()) {
-				rowUtil.table.insertBefore(row.build(), trs[i]);
+				rowUtil.table.insertBefore(tr, trs[i]);
 				added = true;
 				break;
 			}
 		}
 		if( !added) {
-			rowUtil.table.appendChild(row.build());
+			rowUtil.table.appendChild(tr);
 		}
 	}
 };
@@ -41,7 +42,7 @@ function Row( className, dateCell, amountCell, owedCell, typeCell, buttonCell) {
 Row.prototype.build = function() {
 	var tr = document.createElement('tr');
 	tr.row = this;
-	tr.className = this.className;
+	tr.className = 'exists ' + this.className;
 	this.cells.forEach(function(cell){tr.appendChild(cell.buildCell())});
 	this.tr = tr;
 	return tr;

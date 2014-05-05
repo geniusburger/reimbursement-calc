@@ -79,10 +79,13 @@ rc.loadDate = function(date, amount) {
 		amount = new Currency(date[1]);
 		date = new Date(date[0]);
 	}
-    dateRowUtil.add(date, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), amount);
-	$("#testButton").addClass("hidden");
-	$("#clearButton").removeClass("hidden");
-	rc.drawChart();
+    dateRowUtil.add(date, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), amount, rc.completeLoadDate);
+};
+
+rc.completeLoadDate = function() {
+    $("#testButton").addClass("hidden");
+    $("#clearButton").removeClass("hidden");
+    rc.drawChart();
 };
 
 rc.addDate = function(date, amount) {
@@ -110,14 +113,15 @@ rc.loadDatesFromCookie = function(cookie) {
  * Load example/test data.
  */
 rc.loadTestData = function() {
-    [["7/6/2012", "$7802.05"],
-    ["2/1/2013", "$6931.49"],
-    ["4/12/2013", "$7568.49"],
-    ["1/6/2012", "$3802.00"],
-    ["4/13/2012", "$3658.51"],
-    ["12/21/2012", "$775.00"],
-    ["6/28/2013", "$4350.00"]]
-	.forEach(function(date){
+    [
+        //["7/6/2012", "$7802.05"],
+        ["2/1/2013", "$6931.49"],
+        ["4/12/2013", "$7568.49"],
+        //["1/6/2012", "$3802.00"],
+        //["4/13/2012", "$3658.51"],
+        //["12/21/2012", "$775.00"],
+        ["6/28/2013", "$4350.00"]
+	].forEach(function(date){
 		rc.addDate(date);
 	});
 };
@@ -328,7 +332,7 @@ rc.populateTimeAmounts = function(unit, amount) {
 rc.drawChart = function() {
 
     if( !chartIsReady) {
-        $("#chart").addClass("hidden");
+        $("#chart").css('visibility', 'hidden');
         console.error("Chart not ready");
     } else {
         if( !rc.chart) {
@@ -339,9 +343,9 @@ rc.drawChart = function() {
         }
 		var rows = dateRowUtil.getDateRows();
         if( rows.length === 0) {
-            $("#chart").addClass("hidden");
+            $("#chart").css('visibility', 'hidden');
         } else {
-            $("#chart").removeClass("hidden");
+            $("#chart").css('visibility', 'visible');
             var data = [];
             data[0] = ['Date', 'Owed'];
             for( var i = 0; i < rows.length; i++) {

@@ -3,7 +3,7 @@ dateRowUtil = {
 	DATE_STOP_TEXT: "Obligation Expired",
 	onMouseOver: function() {this.row.highlight(true, true); rc.highlightPoints(this.row);},
 	onMouseOut: function() {this.row.highlight(false, true); rc.chart.setSelection();},
-	add: function(date, duration, unit, amount) {
+	add: function(date, duration, unit, amount, callback) {
 		var future = new Date(date);
 		duration = Number(duration);
 		switch (unit) {
@@ -28,10 +28,15 @@ dateRowUtil = {
 
 		rowUtil.add(startRow);
 		rowUtil.add(stopRow);
-		rowUtil.updateOwed();
+        window.setTimeout(function() {
+            var divs = $([startRow.tr, stopRow.tr]).find('td>div');
+            divs.addClass('animateIn');
+            rowUtil.updateOwed();
+            callback();
+        }, 0);
 	},
-	getDateRows: function(){return util.toArray(document.querySelectorAll('#tableBody tr.date-row'));},
-	getStartRows: function(){return util.toArray(document.querySelectorAll('#tableBody tr.date-row.start'));},
+	getDateRows: function(){return util.toArray(document.querySelectorAll('#tableBody tr.date-row.exists'));},
+	getStartRows: function(){return util.toArray(document.querySelectorAll('#tableBody tr.date-row.exists.start'));},
 	removeAll: function() {
 		var trs = dateRowUtil.getStartRows();
 		for( var i = 0; i < trs.length; i++) {
@@ -44,7 +49,10 @@ dateRowUtil = {
 			trs[i].row.remove();
 		}
 		rc.cookies.setDates();
-	}
+	},
+    removeAfterAnimation: function() {
+        var parent = $(this).parents('tr').remove();
+    }
 };
 
 DateRow.prototype = Object.create(Row.prototype);
@@ -69,12 +77,22 @@ DateRow.prototype.pair = function(matchingRow) {
  * Removes a row pair and redraws the chart without saving dates.
  */
 DateRow.prototype.remove = function () {
-	$([this.tr,this.matchingRow.tr]).remove();
-	rowUtil.updateOwed();
-	if( rowUtil.getRows().length < 2) {
+    var rows = $([this.tr,this.matchingRow.tr]);
+    this.tr.onmouseover = null;
+    this.tr.onmouseout = null;
+    this.matchingRow.tr.onmouseover = null;
+    this.matchingRow.tr.onmouseout = null;
+    rows.removeClass('exists highlight');
+    var divs = rows.find('td>div');
+    var firstDivs = rows.find('td:first-child>div');
+    firstDivs.on('transitionend', dateRowUtil.removeAfterAnimation);
+    divs.addClass('animateOut');
+    divs.removeClass('animateIn');
+	if( dateRowUtil.getDateRows().length === 0) {
 		$("#testButton").removeClass("hidden");
 		$("#clearButton").addClass("hidden");
 	}
+    rowUtil.updateOwed();
 	rc.drawChart();
 };
 

@@ -1,52 +1,90 @@
 @import "variables.less";
 
 #page {
-	padding-top: 15px;
+    padding-top: 15px;
 }
 
 .row .input-group {
-	margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 #site-info {
-	margin-bottom: 30px;
+    margin-bottom: 30px;
 }
 
 footer {
-	border-top: 1px solid rgb(28, 30, 34);
-	padding-top: 15px;
+    border-top: 1px solid rgb(28, 30, 34);
+    padding-top: 15px;
+    p {
+        color: rgb(119, 119, 119);
+    }
 }
 
-footer p {
-	color: rgb(119, 119, 119);
+@animationDuration: 0.3s;
+@cellPadding: 8px;
+@easing: linear;
+
+.animate {
+    -webkit-transition: @animationDuration @easing;
+    -moz-transition: @animationDuration @easing;
+    -ms-transition: @animationDuration @easing;
+    -o-transition: @animationDuration @easing;
+    transition: @animationDuration @easing;
+}
+
+.hidden-row {
+    height: 0px !important;
+    padding: 0px @cellPadding !important;
+    color: transparent;
 }
 
 td {
-	vertical-align: middle !important;
+    vertical-align: middle !important;
 }
 
-tr.highlight {
-    &.start {
-      background-color: @brand-danger !important;
+tr {
+    &.highlight {
+        &.start {
+            background-color: @brand-danger !important;
+        }
+        &.stop {
+            background-color: @brand-success !important;
+        }
     }
-    &.stop {
-      background-color: @brand-success !important;
+    &.date-row td {
+        padding: 0px !important;
+        &>div {
+            // Initial hidden style to be overridden by animation styles
+            .hidden-row;
+            overflow-y: hidden;
+
+            &.animateIn {
+                height: @line-height-computed + @cellPadding + @cellPadding !important;
+                padding: @cellPadding !important;
+                color: @text-color;
+                .animate;
+            }
+            &.animateOut {
+                .hidden-row;
+                .animate;
+            }
+        }
     }
 }
 
 table {
-	width: auto !important;
+    width: auto !important;
 }
 
 .alert {
-	margin-top: 15px;
+    margin-top: 15px;
 }
 
 #githubImg {
-	margin-right: 5px;
-	margin-bottom: 2px;
+    margin-right: 5px;
+    margin-bottom: 2px;
 }
 
 g > g > path[fill="#ffffff"] {
-  fill: black;
+    fill: black;
 }

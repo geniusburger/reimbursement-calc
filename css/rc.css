@@ -14,6 +14,18 @@ footer {
 footer p {
   color: #777777;
 }
+.animate {
+  -webkit-transition: 0.3s linear;
+  -moz-transition: 0.3s linear;
+  -ms-transition: 0.3s linear;
+  -o-transition: 0.3s linear;
+  transition: 0.3s linear;
+}
+.hidden-row {
+  height: 0px !important;
+  padding: 0px 8px !important;
+  color: transparent;
+}
 td {
   vertical-align: middle !important;
 }
@@ -22,6 +34,35 @@ tr.highlight.start {
 }
 tr.highlight.stop {
   background-color: #62c462 !important;
+}
+tr.date-row td {
+  padding: 0px !important;
+}
+tr.date-row td > div {
+  height: 0px !important;
+  padding: 0px 8px !important;
+  color: transparent;
+  overflow-y: hidden;
+}
+tr.date-row td > div.animateIn {
+  height: 36px !important;
+  padding: 8px !important;
+  color: #c8c8c8;
+  -webkit-transition: 0.3s linear;
+  -moz-transition: 0.3s linear;
+  -ms-transition: 0.3s linear;
+  -o-transition: 0.3s linear;
+  transition: 0.3s linear;
+}
+tr.date-row td > div.animateOut {
+  height: 0px !important;
+  padding: 0px 8px !important;
+  color: transparent;
+  -webkit-transition: 0.3s linear;
+  -moz-transition: 0.3s linear;
+  -ms-transition: 0.3s linear;
+  -o-transition: 0.3s linear;
+  transition: 0.3s linear;
 }
 table {
   width: auto !important;
