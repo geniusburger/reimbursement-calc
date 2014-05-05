@@ -67,28 +67,27 @@ rc.CHART_OPTIONS = {
 ////////     Variables
 //////////////////////////////////////////////////////////////////////////////////
 
-rc.chartData = [];
-
+rc.cookies = undefined;
 rc.chart = undefined;
 
 //////////////////////////////////////////////////////////////////////////////////
 ////////     Functions
 //////////////////////////////////////////////////////////////////////////////////
 
-rc.addDate = function(date, amount) {
+rc.loadDate = function(date, amount) {
+	if(date instanceof Array && date.length === 2) {
+		amount = new Currency(date[1]);
+		date = new Date(date[0]);
+	}
     dateRowUtil.add(date, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), amount);
 	$("#testButton").addClass("hidden");
 	$("#clearButton").removeClass("hidden");
+	rc.drawChart();
 };
 
-rc.clearDates = function(doNotSave) {
-	var trs = dateRowUtil.getStartRows();
-	for( var i = 0; i < trs.length; i++) {
-		trs[i].row.remove(true);
-	}
-	if( !doNotSave) {
-		rc.saveDates();
-	}
+rc.addDate = function(date, amount) {
+	rc.loadDate(date, amount);
+	rc.cookies.setDates();
 };
 
 rc.loadDatesFromCookie = function(cookie) {
@@ -119,15 +118,8 @@ rc.loadTestData = function() {
     ["12/21/2012", "$775.00"],
     ["6/28/2013", "$4350.00"]]
 	.forEach(function(date){
-		rc.addDate(new Date(date[0]), new Currency(date[1]));
+		rc.addDate(date);
 	});
-
-	rc.saveDates();
-	rc.drawChart();
-};
-
-rc.saveDates = function() {
-	util.setCookie('dates', dateRowUtil.getCookieString());
 };
 
 rc.getSelectedTimeAmount = function() {
@@ -171,10 +163,6 @@ rc.selectPointHandler = function() {
 	rc.highlightPoints(rows[rc.lastPoint.row].row);
 };
 
-/**
- * Highlights the table rows for the pair of events relating to the specified Reimbursement.
- * @param  {number} dateIndex Index of the Reimbursement to highlight events for.
- */
 rc.highlightPoints = function(row) {
 
 	var start = row.isStart() ? row : row.matchingRow;
@@ -200,7 +188,7 @@ rc.highlightPoints = function(row) {
 		rc.STOP_COLOR = $(stop.tr).css('backgroundColor');
 	}
 
-    rc.chart.setSelection([
+    rc.setChartSelection([
 	    {row: startIndex, column: 1},
 	    {row: stopIndex, column: 1}]);
 
@@ -225,6 +213,18 @@ rc.highlightPoints = function(row) {
     rc.setSelectedPointColor(selectedCircles[red1], selectedCircles[red2], rc.START_COLOR);
     rc.setSelectedPointColor(selectedCircles[green1], selectedCircles[green2], rc.STOP_COLOR);
 };
+
+rc.setChartSelection = function(selection) {
+	try {
+		rc.chart.setSelection(selection);
+	} catch (e) {
+		console.warn("Oddity setting selection", e);
+	}
+};
+
+rc.clearChartSelection = function() {
+	rc.setChartSelection();
+}
 
 rc.setSelectedPointColor = function(outerCircle, innerCircle, color) {
     $(outerCircle).attr("stroke", color);
@@ -265,18 +265,23 @@ rc.getInput = function() {
 		dateInput.val("");
 		amountInput.val("");
 		rc.addDate(date, amount);
-		rc.saveDates();
+		rc.cookies.setDates();
 		rc.drawChart();
 		dateInput.focus();
 	}
     return false;
-}
+};
 
 rc.updateReimbursementTime = function() {
-    var dates = dateRowUtil.getCookieString();
-	rc.clearDates(true);
-	rc.loadDatesFromCookie(dates);
-}
+    var dates = [];
+	dateRowUtil.getStartRows().forEach(function(tr){
+		dates.push([
+			tr.row.amountCell.toString(),
+			tr.row.dateCell.toString()]);
+	});
+	dateRowUtil.removeAll();
+	dates.forEach(function(date){rc.loadDate(date);});
+};
 
 rc.timeAmountChanged = function() {
     util.setCookie("timeAmount", this.selectedOptions[0].value);
@@ -289,15 +294,16 @@ rc.timeUnitChanged = function() {
 };
 
 rc.populateTimeAmounts = function(unit, amount) {
+	var max = 0;
     switch (unit) {
         case "Days":
-            var max = 30;
+            max = 30;
             break;
         case "Months":
-            var max = 12;
+            max = 12;
             break;
         case "Years":
-            var max = 20;
+            max = 20;
             break;
         default:
             console.log("Failed to populate time amounts from unit: " + unit);
@@ -336,15 +342,13 @@ rc.drawChart = function() {
             $("#chart").addClass("hidden");
         } else {
             $("#chart").removeClass("hidden");
-            rc.chartData = [];
-            rc.chartData[0] = ['Date', 'Owed'];
+            var data = [];
+            data[0] = ['Date', 'Owed'];
             for( var i = 0; i < rows.length; i++) {
-                rc.chartData[i+1] = [rows[i].row.dateCell.date,
+                data[i+1] = [rows[i].row.dateCell.date,
                     {v: rows[i].row.owedCell.currency.toFloat(), f: rows[i].row.owedCell.currency.toString()}];
             }
-            var data = google.visualization.arrayToDataTable(rc.chartData);
-
-            rc.chart.draw(data, rc.CHART_OPTIONS);
+            rc.chart.draw(google.visualization.arrayToDataTable(data), rc.CHART_OPTIONS);
         }
     }
 };
@@ -355,9 +359,11 @@ rc.drawChart = function() {
 
 window.onload = function() {
 
+	rc.cookies = new CookieManager();
+
     $("#inputButton").on('click', null, rc.getInput);
     $("#testButton").on('click', null, rc.loadTestData);
-    $("#clearButton").on('click', null, rc.clearDates);
+    $("#clearButton").on('click', null, dateRowUtil.deleteAll);
     $("#inputAmount").keypress(rc.enterCatch);
     $("#inputDate").keypress(rc.enterCatch);
 
@@ -381,7 +387,7 @@ window.onload = function() {
             rc.populateTimeAmounts(timeUnitCookie, timeAmountCookie);
         }
 
-		rc.loadDatesFromCookie();
+	    rc.cookies.getDates().forEach(function(date){rc.loadDate(date);});
     }
 
     $("#timeAmount").on('change', null, rc.timeAmountChanged);

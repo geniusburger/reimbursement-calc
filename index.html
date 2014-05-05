@@ -19,6 +19,7 @@
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
+        chartIsReady = false;
         google.load("visualization", "1", {packages:["corechart"]});
         google.setOnLoadCallback(function(){chartIsReady = true;});
     </script>
@@ -139,6 +140,7 @@
         <!--
         if( window.isRunningLocally()) {
             document.writeln("<script src='js/util.js'></script>");
+            document.writeln("<script src='js/new/CookieManager.js'></script>");
             document.writeln("<script src='js/cell/Cell.js'></script>");
             document.writeln("<script src='js/cell/ButtonCell.js'></script>");
             document.writeln("<script src='js/cell/CurrencyCell.js'></script>");

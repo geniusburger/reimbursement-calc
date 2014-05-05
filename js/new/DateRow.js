@@ -30,19 +30,20 @@ dateRowUtil = {
 		rowUtil.add(stopRow);
 		rowUtil.updateOwed();
 	},
-	getDateRows: function(){return document.querySelectorAll('#tableBody tr.date-row');},
-	getStartRows: function(){return document.querySelectorAll('#tableBody tr.date-row.start')},
-	getCookieString: function() {
-		var datesCookie = '';
-		var rows = dateRowUtil.getStartRows();
-		for( var i = 0; i < rows.length; i++) {
-			var row = rows[i].row;
-			if (i > 0) {
-				datesCookie += ':';
-			}
-			datesCookie += row.amountCell.toString() + '@' + row.dateCell.toString();
+	getDateRows: function(){return util.toArray(document.querySelectorAll('#tableBody tr.date-row'));},
+	getStartRows: function(){return util.toArray(document.querySelectorAll('#tableBody tr.date-row.start'));},
+	removeAll: function() {
+		var trs = dateRowUtil.getStartRows();
+		for( var i = 0; i < trs.length; i++) {
+			trs[i].row.remove();
 		}
-		return datesCookie;
+	},
+	deleteAll: function() {
+		var trs = dateRowUtil.getStartRows();
+		for( var i = 0; i < trs.length; i++) {
+			trs[i].row.remove();
+		}
+		rc.cookies.setDates();
 	}
 };
 
@@ -64,17 +65,25 @@ DateRow.prototype.pair = function(matchingRow) {
 	this.matchingRow = matchingRow;
 };
 
-DateRow.prototype.remove = function (doNotSave) {
+/**
+ * Removes a row pair and redraws the chart without saving dates.
+ */
+DateRow.prototype.remove = function () {
 	$([this.tr,this.matchingRow.tr]).remove();
 	rowUtil.updateOwed();
 	if( rowUtil.getRows().length < 2) {
 		$("#testButton").removeClass("hidden");
 		$("#clearButton").addClass("hidden");
 	}
-	if( !doNotSave) {
-		rc.saveDates();
-	}
 	rc.drawChart();
+};
+
+/**
+ * Removes a row pair, redraws the chart, and saves dates.
+ */
+DateRow.prototype.delete = function() {
+	this.remove();
+	rc.cookies.setDates();
 };
 
 DateRow.prototype.highlight = function (enable, recursive) {
