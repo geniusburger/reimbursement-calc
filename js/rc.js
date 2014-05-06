@@ -377,15 +377,15 @@ window.onload = function() {
 
     rc.populateTimeAmounts('Years', 2);
 
-    if (window.isRunningLocally()) {
+    if (false){//window.isRunningLocally()) {
 	    console.log('loading');
         rc.loadTestData();
     } else {
         if (navigator.cookieEnabled !== true) {
             $("#cookieAlert").removeClass("hidden");
         }
-        var timeAmountCookie = util.getCookie("timeAmount");
-        var timeUnitCookie = util.getCookie("timeUnit");
+        var timeAmountCookie = rc.cookies.getCookie("timeAmount");
+        var timeUnitCookie = rc.cookies.getCookie("timeUnit");
 
         if (timeAmountCookie !== null && timeUnitCookie !== null && timeAmountCookie !== "" && timeUnitCookie !== "") {
             $("#timeUnit").val(timeUnitCookie);
