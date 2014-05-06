@@ -76,8 +76,8 @@ rc.chart = undefined;
 
 rc.loadDate = function(date, amount) {
 	if(date instanceof Array && date.length === 2) {
-		amount = new Currency(date[1]);
-		date = new Date(date[0]);
+		amount = new Currency(date[0]);
+		date = new Date(date[1]);
 	}
     dateRowUtil.add(date, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), amount, rc.completeLoadDate);
 };
@@ -114,13 +114,13 @@ rc.loadDatesFromCookie = function(cookie) {
  */
 rc.loadTestData = function() {
     [
-        ["7/6/2012", "$7802.05"],
-        ["2/1/2013", "$6931.49"],
-        ["4/12/2013", "$7568.49"],
-        ["1/6/2012", "$3802.00"],
-        ["4/13/2012", "$3658.51"],
-        ["12/21/2012", "$775.00"],
-        ["6/28/2013", "$4350.00"]
+        ["$7802.05", "7/6/2012"],
+        ["$6931.49", "2/1/2013"],
+        ["$7568.49", "4/12/2013"],
+        ["$3802.00", "1/6/2012"],
+        ["$3658.51", "4/13/2012"],
+        ["$775.00", "12/21/2012"],
+        ["$4350.00", "6/28/2013"]
 	].forEach(function(date){
 		rc.addDate(date);
 	});
@@ -228,7 +228,7 @@ rc.setChartSelection = function(selection) {
 
 rc.clearChartSelection = function() {
 	rc.setChartSelection();
-}
+};
 
 rc.setSelectedPointColor = function(outerCircle, innerCircle, color) {
     $(outerCircle).attr("stroke", color);
@@ -377,7 +377,9 @@ window.onload = function() {
 
     rc.populateTimeAmounts('Years', 2);
 
-    if (false){//window.isRunningLocally()) {
+	var $timeUnit = $("#timeUnit");
+
+    if (window.isRunningLocally()) {
 	    console.log('loading');
         rc.loadTestData();
     } else {
@@ -388,7 +390,7 @@ window.onload = function() {
         var timeUnitCookie = rc.cookies.getCookie("timeUnit");
 
         if (timeAmountCookie !== null && timeUnitCookie !== null && timeAmountCookie !== "" && timeUnitCookie !== "") {
-            $("#timeUnit").val(timeUnitCookie);
+	        $timeUnit.val(timeUnitCookie);
             rc.populateTimeAmounts(timeUnitCookie, timeAmountCookie);
         }
 
@@ -396,5 +398,5 @@ window.onload = function() {
     }
 
     $("#timeAmount").on('change', null, rc.timeAmountChanged);
-    $("#timeUnit").on('change', null, rc.timeUnitChanged);
+	$timeUnit.on('change', null, rc.timeUnitChanged);
 };
