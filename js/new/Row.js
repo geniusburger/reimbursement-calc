@@ -1,6 +1,6 @@
 rowUtil = {
 	table: undefined,
-	getRows: function(){return util.toArray(document.querySelectorAll('#tableBody tr'));},
+	getRows: function(){return util.toArray(document.querySelectorAll('#tableBody tr.exists'));},
 	updateOwed: function() {
 		var owed = new Currency('0');
 		var trs = rowUtil.getRows();
