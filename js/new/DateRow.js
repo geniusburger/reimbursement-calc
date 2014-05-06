@@ -30,7 +30,8 @@ dateRowUtil = {
 		rowUtil.add(stopRow);
         window.setTimeout(function() {
             var divs = $([startRow.tr, stopRow.tr]).find('td>div');
-            divs.addClass('animateIn');
+            divs.on('transitionend', dateRowUtil.removeAnimationClass);
+            divs.addClass('animateIn in');
             rowUtil.updateOwed();
             callback();
         }, 0);
@@ -52,6 +53,9 @@ dateRowUtil = {
 	},
     removeAfterAnimation: function() {
         var parent = $(this).parents('tr').remove();
+    },
+    removeAnimationClass: function() {
+        $(this).removeClass('animateIn');
     }
 };
 
@@ -83,17 +87,19 @@ DateRow.prototype.remove = function () {
     this.matchingRow.tr.onmouseover = null;
     this.matchingRow.tr.onmouseout = null;
     rows.removeClass('exists highlight');
-    var divs = rows.find('td>div');
-    var firstDivs = rows.find('td:first-child>div');
-    firstDivs.on('transitionend', dateRowUtil.removeAfterAnimation);
-    divs.addClass('animateOut');
-    divs.removeClass('animateIn');
-	if( dateRowUtil.getDateRows().length === 0) {
-		$("#testButton").removeClass("hidden");
-		$("#clearButton").addClass("hidden");
-	}
-    rowUtil.updateOwed();
-	rc.drawChart();
+    window.setTimeout(function() {
+        var divs = rows.find('td>div');
+        var firstDivs = rows.find('td:first-child>div');
+        firstDivs.on('transitionend', dateRowUtil.removeAfterAnimation);
+        divs.addClass('animateOut');
+        divs.removeClass('animateIn in');
+        if (dateRowUtil.getDateRows().length === 0) {
+            $("#testButton").removeClass("hidden");
+            $("#clearButton").addClass("hidden");
+        }
+        rowUtil.updateOwed();
+        rc.drawChart();
+    }, 0);
 };
 
 /**
