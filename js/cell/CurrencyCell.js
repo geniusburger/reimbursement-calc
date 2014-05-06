@@ -13,7 +13,7 @@ function CurrencyCell(currency, options) {
 CurrencyCell.prototype.update = function(currency) {
 	this.currency = new Currency(currency);
 	util.removeChildren(this.contentHolder);
-	this.contentHolder.appendChild(this.buildContents());
+	this.contentHolder.appendChild(this.formatCell());
 }
 
 CurrencyCell.prototype.buildContents = function() {

@@ -59,31 +59,35 @@ tr {
             overflow-y: hidden !important;
         }
     }
-    &.highlight {
-        &.start {
-            background-color: @brand-danger !important;
-        }
-        &.stop {
-            background-color: @brand-success !important;
-        }
-    }
     &.date-row td {
         padding: 0px !important;
         &>div {
             // Initial hidden style to be overridden by animation styles
             .hidden-row;
             overflow-y: hidden;
-
-            &.animateIn {
+            &.in {
                 height: @line-height-computed + @cellPadding + @cellPadding !important;
                 padding: @cellPadding !important;
                 color: @text-color;
-                .animate;
+                &.animateIn {
+                    .animate;
+                }
             }
             &.animateOut {
                 .hidden-row;
                 .animate;
             }
+        }
+    }
+    &.highlight {
+        td div {
+            color: @body-bg !important;
+        }
+        &.start {
+            background-color: @brand-danger !important;
+        }
+        &.stop {
+            background-color: @brand-success !important;
         }
     }
 }

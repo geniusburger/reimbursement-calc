@@ -14,39 +14,43 @@ Cell.prototype.makeBold = function(contents) {
 	return strong;
 }
 
+Cell.prototype.formatCell = function() {
+    var contents = this.buildContents();
+
+    if( this.options.alternateText) {
+        contents = document.createTextNode(this.options.alternateText);
+    }
+
+    if( this.options.hiddenText) {
+        var wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+
+        var hidden = document.createElement('div');
+        hidden.appendChild(document.createTextNode(this.options.hiddenText));
+        hidden.className = 'hidden-cell';
+
+        wrapper.appendChild(hidden);
+        wrapper.appendChild(contents);
+        contents = wrapper;
+    }
+
+    if( this.options.bold) {
+        contents = this.makeBold(contents);
+    }
+
+    if( this.options.invisible) {
+        var wrapper = document.createElement('div');
+        wrapper.style.visibility = 'hidden';
+        wrapper.appendChild(contents);
+        contents = wrapper;
+    }
+    return contents;
+}
+
 Cell.prototype.buildCell = function() {
 	var td = document.createElement('td');
 	var div = document.createElement('div');
-
-	var contents = this.buildContents();
-
-	if( this.options.alternateText) {
-		contents = document.createTextNode(this.options.alternateText);
-	}
-
-	if( this.options.hiddenText) {
-		var wrapper = document.createElement('div');
-		wrapper.style.position = 'relative';
-
-		var hidden = document.createElement('div');
-		hidden.appendChild(document.createTextNode(this.options.hiddenText));
-		hidden.className = 'hidden-cell';
-
-		wrapper.appendChild(hidden);
-		wrapper.appendChild(contents);
-		contents = wrapper;
-	}
-
-	if( this.options.bold) {
-		contents = this.makeBold(contents);
-	}
-
-	if( this.options.invisible) {
-		var wrapper = document.createElement('div');
-		wrapper.style.visibility = 'hidden';
-		wrapper.appendChild(contents);
-		contents = wrapper;
-	}
+    var contents = this.formatCell();
 
 	div.appendChild(contents);
 	if( this.alignmentClass) {

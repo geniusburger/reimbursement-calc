@@ -44,12 +44,6 @@ tr.size-row td div {
   visibility: hidden !important;
   overflow-y: hidden !important;
 }
-tr.highlight.start {
-  background-color: #ee5f5b !important;
-}
-tr.highlight.stop {
-  background-color: #62c462 !important;
-}
 tr.date-row td {
   padding: 0px !important;
 }
@@ -59,10 +53,12 @@ tr.date-row td > div {
   color: transparent;
   overflow-y: hidden;
 }
-tr.date-row td > div.animateIn {
+tr.date-row td > div.in {
   height: 36px !important;
   padding: 8px !important;
   color: #c8c8c8;
+}
+tr.date-row td > div.in.animateIn {
   -webkit-transition: 0.3s linear;
   -moz-transition: 0.3s linear;
   -ms-transition: 0.3s linear;
@@ -78,6 +74,15 @@ tr.date-row td > div.animateOut {
   -ms-transition: 0.3s linear;
   -o-transition: 0.3s linear;
   transition: 0.3s linear;
+}
+tr.highlight td div {
+  color: #272b30 !important;
+}
+tr.highlight.start {
+  background-color: #ee5f5b !important;
+}
+tr.highlight.stop {
+  background-color: #62c462 !important;
 }
 table {
   width: auto !important;
