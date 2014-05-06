@@ -38,11 +38,27 @@ footer {
     color: transparent;
 }
 
+.hidden-cell {
+    position: absolute;
+    left: 0;
+    top: 0;
+    visibility: hidden;
+}
+
 td {
     vertical-align: middle !important;
 }
 
 tr {
+    &.size-row td {
+        padding: 0 @cellPadding !important;
+        border: 0 !important;
+        div {
+            height: 0px;
+            visibility: hidden !important;
+            overflow-y: hidden !important;
+        }
+    }
     &.highlight {
         &.start {
             background-color: @brand-danger !important;

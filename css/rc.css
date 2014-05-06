@@ -26,8 +26,23 @@ footer p {
   padding: 0px 8px !important;
   color: transparent;
 }
+.hidden-cell {
+  position: absolute;
+  left: 0;
+  top: 0;
+  visibility: hidden;
+}
 td {
   vertical-align: middle !important;
+}
+tr.size-row td {
+  padding: 0 8px !important;
+  border: 0 !important;
+}
+tr.size-row td div {
+  height: 0px;
+  visibility: hidden !important;
+  overflow-y: hidden !important;
 }
 tr.highlight.start {
   background-color: #ee5f5b !important;

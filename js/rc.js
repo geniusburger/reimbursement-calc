@@ -23,7 +23,7 @@ rc.CHART_OPTIONS = {
     backgroundColor: rc.BACKGROUND,
     selectionMode: 'multiple',
     animation: {
-        duration: 1000
+        duration: 300
     },
     series: {
         color: rc.LINE
@@ -114,12 +114,12 @@ rc.loadDatesFromCookie = function(cookie) {
  */
 rc.loadTestData = function() {
     [
-        //["7/6/2012", "$7802.05"],
+        ["7/6/2012", "$7802.05"],
         ["2/1/2013", "$6931.49"],
         ["4/12/2013", "$7568.49"],
-        //["1/6/2012", "$3802.00"],
-        //["4/13/2012", "$3658.51"],
-        //["12/21/2012", "$775.00"],
+        ["1/6/2012", "$3802.00"],
+        ["4/13/2012", "$3658.51"],
+        ["12/21/2012", "$775.00"],
         ["6/28/2013", "$4350.00"]
 	].forEach(function(date){
 		rc.addDate(date);
@@ -172,10 +172,10 @@ rc.highlightPoints = function(row) {
 	var start = row.isStart() ? row : row.matchingRow;
 	var stop = start.matchingRow;
 
-	// Subtract 1 from indexes to account for the header row
-	var startIndex = start.tr.rowIndex-1;
-	var stopIndex = stop.tr.rowIndex-1;
-	var todayIndex = todayRowUtil.row.tr.rowIndex-1;
+	// Subtract 2 from indexes to account for the header row and size row
+	var startIndex = start.tr.rowIndex-2;
+	var stopIndex = stop.tr.rowIndex-2;
+	var todayIndex = todayRowUtil.row.tr.rowIndex-2;
 
 	// Skip today row
 	if( stopIndex > todayIndex) {
@@ -345,15 +345,15 @@ rc.drawChart = function() {
         if( rows.length === 0) {
             $("#chart").css('visibility', 'hidden');
         } else {
-            $("#chart").css('visibility', 'visible');
-            var data = [];
-            data[0] = ['Date', 'Owed'];
-            for( var i = 0; i < rows.length; i++) {
-                data[i+1] = [rows[i].row.dateCell.date,
-                    {v: rows[i].row.owedCell.currency.toFloat(), f: rows[i].row.owedCell.currency.toString()}];
-            }
-            rc.chart.draw(google.visualization.arrayToDataTable(data), rc.CHART_OPTIONS);
+	        $("#chart").css('visibility', 'visible');
         }
+        var data = [];
+        data[0] = ['Date', 'Owed'];
+        for( var i = 0; i < rows.length; i++) {
+            data[i+1] = [rows[i].row.dateCell.date,
+                {v: rows[i].row.owedCell.currency.toFloat(), f: rows[i].row.owedCell.currency.toString()}];
+        }
+        rc.chart.draw(google.visualization.arrayToDataTable(data), rc.CHART_OPTIONS);
     }
 };
 
@@ -372,6 +372,7 @@ window.onload = function() {
     $("#inputDate").keypress(rc.enterCatch);
 
 	rowUtil.table = document.getElementById('tableBody');
+	sizeRowUtil.add();
 	todayRowUtil.add();
 
     rc.populateTimeAmounts('Years', 2);

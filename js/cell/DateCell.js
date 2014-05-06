@@ -1,8 +1,8 @@
 
 DateCell.prototype = Object.create(Cell.prototype);
 
-function DateCell(date) {
-	Cell.apply(this, ['text-right']);
+function DateCell(date, options) {
+	Cell.apply(this, ['text-right', options]);
 	this.date = date;
 }
 

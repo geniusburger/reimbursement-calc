@@ -42,7 +42,7 @@ function Row( className, dateCell, amountCell, owedCell, typeCell, buttonCell) {
 Row.prototype.build = function() {
 	var tr = document.createElement('tr');
 	tr.row = this;
-	tr.className = 'exists ' + this.className;
+	tr.className = this.className;
 	this.cells.forEach(function(cell){tr.appendChild(cell.buildCell())});
 	this.tr = tr;
 	return tr;

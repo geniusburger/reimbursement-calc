@@ -1,9 +1,8 @@
 
 ButtonCell.prototype = Object.create(Cell.prototype);
 
-function ButtonCell(invisible) {
-	Cell.apply(this, arguments);
-	this.invisible = invisible;
+function ButtonCell(options) {
+	Cell.apply(this, [null, options]);
 }
 
 ButtonCell.prototype.buildContents = function() {
@@ -12,9 +11,6 @@ ButtonCell.prototype.buildContents = function() {
     button.className = "close";
     button.setAttribute("aria-hidden", "true");
     button.innerHTML = "&times;";
-	if( this.invisible) {
-		button.style.visibility = 'hidden';
-	}
     $(button).click(this.onclick);
     return button;
 };

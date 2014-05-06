@@ -1,8 +1,8 @@
 
 TextCell.prototype = Object.create(Cell.prototype);
 
-function TextCell(text) {
-	Cell.apply(this, ['text-center']);
+function TextCell(text, options) {
+	Cell.apply(this, ['text-center', options]);
 	this.text = text;
 }
 

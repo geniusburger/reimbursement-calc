@@ -2,7 +2,7 @@ dateRowUtil = {
 	DATE_START_TEXT: "Reimbursed",
 	DATE_STOP_TEXT: "Obligation Expired",
 	onMouseOver: function() {this.row.highlight(true, true); rc.highlightPoints(this.row);},
-	onMouseOut: function() {this.row.highlight(false, true); rc.chart.setSelection();},
+	onMouseOut: function() {this.row.highlight(false, true); rc.setChartSelection();},
 	add: function(date, duration, unit, amount, callback) {
 		var future = new Date(date);
 		duration = Number(duration);
@@ -59,7 +59,7 @@ DateRow.prototype = Object.create(Row.prototype);
 
 function DateRow(date, amount, start) {
 	Row.apply(this, [
-		'date-row ' + (start ? 'start' : 'stop'),
+		'exists date-row ' + (start ? 'start' : 'stop'),
 		new DateCell(date),
 		new CurrencyCell(amount),
 		new CurrencyCell('0'),

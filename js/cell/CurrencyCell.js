@@ -1,13 +1,13 @@
 
 CurrencyCell.prototype = Object.create(Cell.prototype);
 
-function CurrencyCell(currency, useThousandsSeparators) {
-	Cell.apply(this, ['text-right']);
+function CurrencyCell(currency, options) {
+	Cell.apply(this, ['text-right', options]);
 	this.currency = currency;
-	this.currency.useThousandsSeparators = useThousandsSeparators;
-	if( typeof useThousandsSeparators === 'undefined') {
-		this.currency.useThousandsSeparators = true;
+	if( typeof this.options.useThousandsSeparators !== 'boolean') {
+		this.options.useThousandsSeparators = true;
 	}
+	this.currency.useThousandsSeparators = this.options.useThousandsSeparators;
 }
 
 CurrencyCell.prototype.update = function(currency) {

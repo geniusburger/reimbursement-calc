@@ -8,7 +8,6 @@ todayRowUtil = {
 			rowUtil.add(todayRowUtil.row);
 			rowUtil.updateOwed();
 			todayRowUtil.exists = true;
-			todayRowUtil.row.fixWidth();
 		}
 	}
 };
@@ -17,23 +16,15 @@ TodayRow.prototype = Object.create(Row.prototype);
 
 function TodayRow() {
     Row.apply(this, [
-	    'active today-row',
-	    new BoldDateCell(new Date(), todayRowUtil.TODAY_TEXT),
-	    new InvisibleTextCell('$00,000.00'),
-	    new BoldCurrencyCell(new Currency('0')),
-	    new InvisibleTextCell(dateRowUtil.DATE_START_TEXT.length > dateRowUtil.DATE_STOP_TEXT.length ? dateRowUtil.DATE_START_TEXT : dateRowUtil.DATE_STOP_TEXT),
-	    new ButtonCell(true)]);
+	    'exists active today-row',
+	    new DateCell(new Date(), {bold: true, alternateText: todayRowUtil.TODAY_TEXT}),
+	    new TextCell(''),
+	    new CurrencyCell(new Currency('0'), {bold: true}),
+	    new TextCell(''),
+	    new TextCell('')]);
 }
 
 TodayRow.prototype.update = function(currency) {
 	this.owedCell.update(currency);
 	return currency;
-};
-
-TodayRow.prototype.fixWidth = function() {
-	var newWidth = this.amountCell.td.offsetWidth + 'px';
-	this.owedCell.td.style.minWidth = newWidth;
-
-	newWidth = this.typeCell.td.offsetWidth + 'px';
-	this.dateCell.td.style.minWidth = newWidth;
 };
