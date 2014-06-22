@@ -85,9 +85,13 @@ rc.loadDate = function(date, amount) {
 /**
  * @nextExpiration {Object|null} days Number of days until the next reimbursement expiration
  */
-rc.completeLoadDate = function(nextExpiration) {
+rc.completeLoadDate = function() {
     $("#testButton").addClass("hidden");
     $("#clearButton").removeClass("hidden");
+    rc.drawChart();
+};
+
+rc.updateNextExpiration = function(nextExpiration) {
     var nextEvent = document.getElementById('nextEvent');
     if( nextExpiration === null) {
         nextEvent.style.visibility = 'hidden';
@@ -102,7 +106,6 @@ rc.completeLoadDate = function(nextExpiration) {
             rc.unhoverPointHandler();
         }
     }
-    rc.drawChart();
 };
 
 rc.addDate = function(date, amount) {

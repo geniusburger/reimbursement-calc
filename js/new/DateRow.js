@@ -33,8 +33,8 @@ dateRowUtil = {
             var divs = $([startRow.tr, stopRow.tr]).find('td>div');
             divs.on('transitionend', dateRowUtil.removeAnimationClass);
             divs.addClass('animateIn in');
-            var days = rowUtil.updateOwed();
-            callback(days);
+            rowUtil.updateOwed();
+            callback();
         }, 0);
 	},
 	getDateRows: function(){return util.toArray(document.querySelectorAll('#tableBody tr.date-row.exists'));},
