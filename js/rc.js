@@ -89,6 +89,8 @@ rc.completeLoadDate = function() {
     $("#testButton").addClass("hidden");
     $("#clearButton").removeClass("hidden");
     rc.drawChart();
+    // todo figure out how to do this without a random sleep
+    setTimeout(rc.highlightPoints, 1000);
 };
 
 rc.updateNextExpiration = function(nextExpiration) {
@@ -161,9 +163,15 @@ rc.getSelectedTimeUnit = function() {
  */
 rc.hoverPointHandler = function(point) {
     rc.lastPoint = point;
-	var rows = dateRowUtil.getDateRows();
-	rows[point.row].row.highlight(true, true);
-	rc.highlightPoints(rows[point.row].row);
+    // check if row is todayRow
+    var todayIndex = todayRowUtil.row.tr.rowIndex-2;
+    if( point.row === todayIndex) {
+        console.log('skipping today row', point.row, todayIndex);
+    } else {
+        var rows = rowUtil.getRows();
+        rows[point.row].row.highlight(true, true);
+        rc.highlightPoints(rows[point.row].row);
+    }
 };
 
 /**
@@ -174,7 +182,8 @@ rc.unhoverPointHandler = function() {
 	for( var i = 0; i < rows.length; i++) {
 		rows[i].row.highlight(false, true);
 	}
-	rc.chart.setSelection();
+    rc.setChartSelection();
+    rc.highlightPoints();
 };
 
 /**
@@ -189,53 +198,105 @@ rc.selectPointHandler = function() {
 
 rc.highlightPoints = function(row) {
 
-	var start = row.isStart() ? row : row.matchingRow;
-	var stop = start.matchingRow;
+    var today = todayRowUtil.row;
+    var todayIndex = today.tr.rowIndex - 2;
+    console.log('typeof row', row);
+    if( typeof row === 'undefined' || row === null) {
+        rc.setChartSelection([
+            {row: todayIndex, column: 1}
+        ]);
+    } else {
+        var start = row.isStart() ? row : row.matchingRow;
+        var stop = start.matchingRow;
 
-	// Subtract 2 from indexes to account for the header row and size row
-	var startIndex = start.tr.rowIndex-2;
-	var stopIndex = stop.tr.rowIndex-2;
-	var todayIndex = todayRowUtil.row.tr.rowIndex-2;
+        // Subtract 2 from indexes to account for the header row and size row
+        var startIndex = start.tr.rowIndex - 2;
+        var stopIndex = stop.tr.rowIndex - 2;
 
-	// Skip today row
-	if( stopIndex > todayIndex) {
-		stopIndex--;
-		if( startIndex > todayIndex) {
-			startIndex--;
-		}
-	}
+        console.log('row indices', startIndex, stopIndex, todayIndex);
 
-	if( !rc.START_COLOR) {
-		rc.START_COLOR = $(start.tr).css('backgroundColor');
-	}
-	if( !rc.STOP_COLOR) {
-		rc.STOP_COLOR = $(stop.tr).css('backgroundColor');
-	}
+        rc.setChartSelection([
+            {row: startIndex, column: 1},
+            {row: stopIndex, column: 1},
+            {row: todayIndex, column: 1}
+        ]);
+    }
 
-    rc.setChartSelection([
-	    {row: startIndex, column: 1},
-	    {row: stopIndex, column: 1}]);
+    if (!rc.TODAY_COLOR) {
+        rc.TODAY_COLOR = $(today.tr).children('td').first().css('backgroundColor');
+        console.log('today color', rc.TODAY_COLOR);
+    }
 
     var selectedCircles = $("svg>g>g>g>circle");
     var d = [];
-    for( var i = 0; i < selectedCircles.length; i++) {
+    for (var i = 0; i < selectedCircles.length; i++) {
         d.push(selectedCircles[i].outerHTML);
     }
-    var red1 = 0;
-    var red2 = 1;
-    var green1 = 2;
-    var green2 = 3;
-    if( selectedCircles.length > 4) {
-        // The use is hovering over a point so extra circles are being drawn
+    var start1 = 0;
+    var start2 = 1;
+    var stop1 = 2;
+    var stop2 = 3;
+    var today1 = 4;
+    var today2 = 5;
+    var temp1;
+    var temp2;
+
+    console.log('selectedCircles.length', selectedCircles.length);
+    if (selectedCircles.length < 6) {
+        // just today dot
+        today1 = 0;
+        today2 = selectedCircles.length - 1;
+        rc.setSelectedPointColor(selectedCircles[today1], selectedCircles[today2], rc.TODAY_COLOR);
+        return;
+    } else if( selectedCircles.length > 6) {
+        // The mouse is hovering over a point so extra circles are being drawn
         if( selectedCircles[4].getAttribute("stroke") == "none") {
             // The first of a pair (the red one) of points was hovered
-            red2 = 4;
-            green1 = 5;
+            start2 += 3;
+            stop1 += 3;
+            stop2 += 3;
+            today1 += 3;
+            console.log('first hovered');
+        } else if (selectedCircles[7].getAttribute("stroke") == "none") {
+            stop2 += 3;
+            today1 += 3;
+            console.log('second hovered');
+        } else {
+            console.log('third hovered');
         }
-        green2 = 6;
+
+        today2 += 3;
     }
-    rc.setSelectedPointColor(selectedCircles[red1], selectedCircles[red2], rc.START_COLOR);
-    rc.setSelectedPointColor(selectedCircles[green1], selectedCircles[green2], rc.STOP_COLOR);
+
+    if( todayIndex < stopIndex) {
+        temp1 = stop1;
+        temp2 = stop2;
+        stop1 = today1;
+        stop2 = today2;
+        today1 = temp1;
+        today2 = temp2;
+    }
+    if( todayIndex < startIndex) {
+        temp1 = start1;
+        temp2 = start2;
+        start1 = today1;
+        start2 = today2;
+        today1 = temp1;
+        today2 = temp2;
+    }
+
+    if (!rc.START_COLOR) {
+        rc.START_COLOR = $(start.tr).css('backgroundColor');
+        console.log('start color', rc.START_COLOR);
+    }
+    if (!rc.STOP_COLOR) {
+        rc.STOP_COLOR = $(stop.tr).css('backgroundColor');
+        console.log('stop color', rc.STOP_COLOR);
+    }
+
+    rc.setSelectedPointColor(selectedCircles[start1], selectedCircles[start2], rc.START_COLOR);
+    rc.setSelectedPointColor(selectedCircles[stop1], selectedCircles[stop2], rc.STOP_COLOR);
+    rc.setSelectedPointColor(selectedCircles[today1], selectedCircles[today2], rc.TODAY_COLOR);
 };
 
 rc.setChartSelection = function(selection) {
@@ -350,7 +411,6 @@ rc.populateTimeAmounts = function(unit, amount) {
 };
 
 rc.drawChart = function() {
-
     if( !chartIsReady) {
         $("#chart").css('visibility', 'hidden');
         console.error("Chart not ready");
@@ -361,20 +421,59 @@ rc.drawChart = function() {
             google.visualization.events.addListener(rc.chart, 'onmouseover', rc.hoverPointHandler);
             google.visualization.events.addListener(rc.chart, 'onmouseout', rc.unhoverPointHandler);
         }
-		var rows = dateRowUtil.getDateRows();
+		var rows = rowUtil.getRows();
         if( rows.length === 0) {
             $("#chart").css('visibility', 'hidden');
         } else {
 	        $("#chart").css('visibility', 'visible');
         }
+        var todayDot = {
+            previous : null,
+            today : null
+        };
         var data = [];
         data[0] = ['Date', 'Owed'];
         for( var i = 0; i < rows.length; i++) {
-            data[i+1] = [rows[i].row.dateCell.date,
-                {v: rows[i].row.owedCell.currency.toFloat(), f: rows[i].row.owedCell.currency.toString()}];
+            if( rows[i].row instanceof TodayRow) {
+                todayDot.today = rows[i].row;
+            } else {
+                if( todayDot.today) {
+                    // insert todayDot, calculate value
+                    var nextDate = rows[i].row;
+                    var previousTime = todayDot.previous.dateCell.date.getTime();
+                    var todayTime = todayDot.today.dateCell.date.getTime();
+                    var nextTime = nextDate.dateCell.date.getTime();
+                    var totalTime = nextTime - previousTime;
+
+                    var fractionOfTime = (todayTime - previousTime) / totalTime;
+
+                    var previousOwed = todayDot.previous.owedCell.currency.toFloat();
+                    var nextOwed = nextDate.owedCell.currency.toFloat();
+                    var todayOwed = previousOwed + (fractionOfTime * (nextOwed - previousOwed));
+
+                    data.push(rc.buildDot(todayDot.today, todayOwed));
+                    todayDot.today = null;
+                }
+                todayDot.previous = rows[i].row;
+                data.push(rc.buildDot(todayDot.previous));
+            }
         }
+        if( todayDot.today) {
+            // today is the last dot, insert it
+            data.push(rc.buildDot(todayDot.today));
+        }
+
         rc.chart.draw(google.visualization.arrayToDataTable(data), rc.CHART_OPTIONS);
     }
+};
+
+rc.buildDot = function(row, v) {
+    var d = row.dateCell.date;
+    v = v || row.owedCell.currency.toFloat();
+    var f = row.owedCell.currency.toString();
+    var dot = [d, {v: v, f: f}];
+    console.log('dot', dot);
+    return dot;
 };
 
 //////////////////////////////////////////////////////////////////////////////////

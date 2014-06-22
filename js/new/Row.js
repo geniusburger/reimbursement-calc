@@ -19,21 +19,19 @@ rowUtil = {
                 var todayDate = util.stripTime(today.dateCell.date);
                 var days = (futureDate - todayDate) / 86400000;
                 var floor = Math.floor(days);
+
                 if( floor !== days) {
                     var ceil = Math.ceil(days);
                     if( (ceil - days) < (days - floor)) {
                         days = ceil;
-                        console.log('float days round up');
                     } else {
                         days = floor;
-                        console.log('float days round down');
                     }
-                } else {
-                    console.log('integer days')
                 }
+
                 nextExpiration = {
                     days: days,
-                    row: i-1
+                    row: i
                 };
                 today = null; // Make sure it won't get populated again
             }
