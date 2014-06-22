@@ -82,9 +82,26 @@ rc.loadDate = function(date, amount) {
     dateRowUtil.add(date, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), amount, rc.completeLoadDate);
 };
 
-rc.completeLoadDate = function() {
+/**
+ * @nextExpiration {Object|null} days Number of days until the next reimbursement expiration
+ */
+rc.completeLoadDate = function(nextExpiration) {
     $("#testButton").addClass("hidden");
     $("#clearButton").removeClass("hidden");
+    var nextEvent = document.getElementById('nextEvent');
+    if( nextExpiration === null) {
+        nextEvent.style.visibility = 'hidden';
+    } else {
+        nextEvent.style.visibility = 'visible';
+        document.getElementById('daysLeft').innerHTML = nextExpiration.days;
+        var textDiv = document.querySelector('#nextEvent>div');
+        textDiv.onmouseover = function() {
+            rc.hoverPointHandler(nextExpiration);
+        };
+        textDiv.onmouseout = function() {
+            rc.unhoverPointHandler();
+        }
+    }
     rc.drawChart();
 };
 

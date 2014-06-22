@@ -29,4 +29,10 @@ util.isInvalidDate = function(date) {
 
 util.toArray = function(list) {
 	return Array.prototype.slice.call(list);
-}
+};
+
+util.stripTime = function(date) {
+    if( date instanceof Date) {
+        return new Date(date.getTime() - (date.getHours() * 3600000) - (date.getMinutes() * 60000) - (date.getSeconds() * 1000) - date.getMilliseconds());
+    }
+};

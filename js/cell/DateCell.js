@@ -12,4 +12,4 @@ DateCell.prototype.buildContents = function() {
 
 DateCell.prototype.toString = function() {
 	return this.date.toDateString();
-}
+};

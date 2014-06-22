@@ -4,9 +4,25 @@ rowUtil = {
 	updateOwed: function() {
 		var owed = new Currency('0');
 		var trs = rowUtil.getRows();
+        var today = null;
+        var nextExpiration = null;
 		for( var i = 0; i < trs.length; i++) {
-			trs[i].row.update(owed);
+            var row = trs[i].row;
+            row.update(owed);
+
+            if( row instanceof TodayRow) {
+                today = row;
+            }
+
+            if( today && row.isStop()) {
+                nextExpiration = {
+                    days: (util.stripTime(row.dateCell.date) - util.stripTime(today.dateCell.date)) / 86400000,
+                    row: i-1
+                };
+                today = null; // Make sure it won't get populated again
+            }
 		}
+        return nextExpiration;
 	},
 	add: function(row) {
 		if( !rowUtil.table) {
@@ -46,7 +62,7 @@ Row.prototype.build = function() {
 	this.cells.forEach(function(cell){tr.appendChild(cell.buildCell())});
 	this.tr = tr;
 	return tr;
-}
+};
 
 Row.prototype.update = function(currency) {
 
@@ -54,4 +70,8 @@ Row.prototype.update = function(currency) {
 
 Row.prototype.isStart = function() {
 	return this instanceof DateRow && this.amountCell.currency.start;
+};
+
+Row.prototype.isStop = function() {
+    return this instanceof DateRow && !this.amountCell.currency.start;
 };

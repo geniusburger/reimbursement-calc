@@ -15,6 +15,7 @@ dateRowUtil = {
 				break;
 			default:
 				console.log("Failed to find time unit, defaulting to years");
+                // fall-through
 			case "Years":
 				future.setFullYear(future.getFullYear() + duration);
 				break;
@@ -32,8 +33,8 @@ dateRowUtil = {
             var divs = $([startRow.tr, stopRow.tr]).find('td>div');
             divs.on('transitionend', dateRowUtil.removeAnimationClass);
             divs.addClass('animateIn in');
-            rowUtil.updateOwed();
-            callback();
+            var days = rowUtil.updateOwed();
+            callback(days);
         }, 0);
 	},
 	getDateRows: function(){return util.toArray(document.querySelectorAll('#tableBody tr.date-row.exists'));},
@@ -52,7 +53,7 @@ dateRowUtil = {
 		rc.cookies.setDates();
 	},
     removeAfterAnimation: function() {
-        var parent = $(this).parents('tr').remove();
+        $(this).parents('tr').remove();
     },
     removeAnimationClass: function() {
         $(this).removeClass('animateIn');
