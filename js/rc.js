@@ -166,7 +166,11 @@ rc.hoverPointHandler = function(point) {
     // check if row is todayRow
     var todayIndex = todayRowUtil.row.tr.rowIndex-2;
     if( point.row === todayIndex) {
-        console.log('skipping today row', point.row, todayIndex);
+        console.log('hovering today point', point.row, todayIndex);
+        rc.setChartSelection([
+            {row: todayIndex, column: 1}
+        ]);
+        rc.colorPoints();
     } else {
         var rows = rowUtil.getRows();
         rows[point.row].row.highlight(true, true);
@@ -188,12 +192,10 @@ rc.unhoverPointHandler = function() {
 
 /**
  * Handles select events for points on the chart.
- * The last hovered point will be rehighlighted since any click will results in a deselection of a highlighted point.
+ * The last hovered point will be re-highlighted since any click will results in a deselection of a highlighted point.
  */
 rc.selectPointHandler = function() {
-	var rows = dateRowUtil.getDateRows();
-	rows[rc.lastPoint.row].row.highlight(true, true);
-	rc.highlightPoints(rows[rc.lastPoint.row].row);
+    rc.hoverPointHandler(rc.lastPoint);
 };
 
 rc.highlightPoints = function(row) {
@@ -222,67 +224,95 @@ rc.highlightPoints = function(row) {
         ]);
     }
 
+    rc.colorPoints(start, stop, today, startIndex, stopIndex, todayIndex)
+};
+
+rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex) {
+
     if (!rc.TODAY_COLOR) {
         rc.TODAY_COLOR = $(today.tr).children('td').first().css('backgroundColor');
         console.log('today color', rc.TODAY_COLOR);
     }
 
     var selectedCircles = $("svg>g>g>g>circle");
-    var d = [];
+    var circles = [];
     for (var i = 0; i < selectedCircles.length; i++) {
-        d.push(selectedCircles[i].outerHTML);
+        circles.push(selectedCircles[i].outerHTML);
     }
-    var start1 = 0;
-    var start2 = 1;
-    var stop1 = 2;
-    var stop2 = 3;
-    var today1 = 4;
-    var today2 = 5;
-    var temp1;
-    var temp2;
-
     console.log('selectedCircles.length', selectedCircles.length);
+    console.log('circles', circles);
+
+    var first1 = 0;
+    var first2 = 1;
+    var middle1 = 2;
+    var middle2 = 3;
+    var last1 = 4;
+    var last2 = 5;
+
+    var start1;
+    var start2;
+    var stop1;
+    var stop2;
+    var today1;
+    var today2;
     if (selectedCircles.length < 6) {
         // just today dot
-        today1 = 0;
-        today2 = selectedCircles.length - 1;
-        rc.setSelectedPointColor(selectedCircles[today1], selectedCircles[today2], rc.TODAY_COLOR);
+        rc.setSelectedPointColor(selectedCircles[0], selectedCircles[selectedCircles.length - 1], rc.TODAY_COLOR);
         return;
     } else if( selectedCircles.length > 6) {
-        // The mouse is hovering over a point so extra circles are being drawn
-        if( selectedCircles[4].getAttribute("stroke") == "none") {
-            // The first of a pair (the red one) of points was hovered
-            start2 += 3;
-            stop1 += 3;
-            stop2 += 3;
-            today1 += 3;
+        // The mouse is hovering over a point so 3 extra circles are being drawn between the existing circles for the hovered point
+
+        // Check if the first point is hovered, Red-Today-Green or Red-Green-Today, must be red
+        if( selectedCircles[2].getAttribute("fill") == "none") {
+            first2 += 3;
+            middle1 += 3;
+            middle2 += 3;
+            last1 += 3;
+            last2 += 3;
             console.log('first hovered');
-        } else if (selectedCircles[7].getAttribute("stroke") == "none") {
-            stop2 += 3;
-            today1 += 3;
-            console.log('second hovered');
-        } else {
-            console.log('third hovered');
         }
-
-        today2 += 3;
+        // Check if the middle point is hovered, Red-Green-Today or Today-Red-Green
+        else if( selectedCircles[4].getAttribute("fill") == "none") {
+            middle2 += 3;
+            last1 += 3;
+            last2 += 3;
+            console.log('middle hovered');
+        }
+        // Check if the last point is hovered, Red-Today-Green or Today-Red-Green, must be green
+        else if( selectedCircles[6].getAttribute("fill") == "none") {
+            last2 += 3;
+            console.log('last hovered');
+        }
     }
 
-    if( todayIndex < stopIndex) {
-        temp1 = stop1;
-        temp2 = stop2;
-        stop1 = today1;
-        stop2 = today2;
-        today1 = temp1;
-        today2 = temp2;
-    }
+    // Adjust today/start/stop positions
     if( todayIndex < startIndex) {
-        temp1 = start1;
-        temp2 = start2;
-        start1 = today1;
-        start2 = today2;
-        today1 = temp1;
-        today2 = temp2;
+        // Today-Start-Stop
+        today1 = first1;
+        today2 = first2;
+        start1 = middle1;
+        start2 = middle2;
+        stop1 = last1;
+        stop2 = last2;
+        console.log('Today-Start-Stop');
+    } else if( todayIndex < stopIndex) {
+        // Start-Today-Stop
+        start1 = first1;
+        start2 = first2;
+        today1 = middle1;
+        today2 = middle2;
+        stop1 = last1;
+        stop2 = last2;
+        console.log('Start-Today-Stop');
+    } else {
+        // Start-Stop-Today
+        start1 = first1;
+        start2 = first2;
+        stop1 = middle1;
+        stop2 = middle2;
+        today1 = last1;
+        today2 = last2;
+        console.log('Start-Stop-Today');
     }
 
     if (!rc.START_COLOR) {
