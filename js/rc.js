@@ -452,7 +452,7 @@ rc.drawChart = function() {
             google.visualization.events.addListener(rc.chart, 'onmouseout', rc.unhoverPointHandler);
         }
 		var rows = rowUtil.getRows();
-        if( rows.length === 0) {
+        if( rows.length <= 1) {
             $("#chart").css('visibility', 'hidden');
         } else {
 	        $("#chart").css('visibility', 'visible');
