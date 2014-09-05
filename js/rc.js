@@ -166,7 +166,6 @@ rc.hoverPointHandler = function(point) {
     // check if row is todayRow
     var todayIndex = todayRowUtil.row.tr.rowIndex-2;
     if( point.row === todayIndex) {
-        console.log('hovering today point', point.row, todayIndex);
         rc.setChartSelection([
             {row: todayIndex, column: 1}
         ]);
@@ -202,7 +201,6 @@ rc.highlightPoints = function(row) {
 
     var today = todayRowUtil.row;
     var todayIndex = today.tr.rowIndex - 2;
-    console.log('typeof row', row);
     if( typeof row === 'undefined' || row === null) {
         rc.setChartSelection([
             {row: todayIndex, column: 1}
@@ -214,8 +212,6 @@ rc.highlightPoints = function(row) {
         // Subtract 2 from indexes to account for the header row and size row
         var startIndex = start.tr.rowIndex - 2;
         var stopIndex = stop.tr.rowIndex - 2;
-
-        console.log('row indices', startIndex, stopIndex, todayIndex);
 
         rc.setChartSelection([
             {row: startIndex, column: 1},
@@ -231,7 +227,6 @@ rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex)
 
     if (!rc.TODAY_COLOR) {
         rc.TODAY_COLOR = $(today.tr).children('td').first().css('backgroundColor');
-        console.log('today color', rc.TODAY_COLOR);
     }
 
     var selectedCircles = $("svg>g>g>g>circle");
@@ -239,8 +234,6 @@ rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex)
     for (var i = 0; i < selectedCircles.length; i++) {
         circles.push(selectedCircles[i].outerHTML);
     }
-    console.log('selectedCircles.length', selectedCircles.length);
-    console.log('circles', circles);
 
     var first1 = 0;
     var first2 = 1;
@@ -269,19 +262,16 @@ rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex)
             middle2 += 3;
             last1 += 3;
             last2 += 3;
-            console.log('first hovered');
         }
         // Check if the middle point is hovered, Red-Green-Today or Today-Red-Green
         else if( selectedCircles[4].getAttribute("fill") == "none") {
             middle2 += 3;
             last1 += 3;
             last2 += 3;
-            console.log('middle hovered');
         }
         // Check if the last point is hovered, Red-Today-Green or Today-Red-Green, must be green
         else if( selectedCircles[6].getAttribute("fill") == "none") {
             last2 += 3;
-            console.log('last hovered');
         }
     }
 
@@ -294,7 +284,6 @@ rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex)
         start2 = middle2;
         stop1 = last1;
         stop2 = last2;
-        console.log('Today-Start-Stop');
     } else if( todayIndex < stopIndex) {
         // Start-Today-Stop
         start1 = first1;
@@ -303,7 +292,6 @@ rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex)
         today2 = middle2;
         stop1 = last1;
         stop2 = last2;
-        console.log('Start-Today-Stop');
     } else {
         // Start-Stop-Today
         start1 = first1;
@@ -312,16 +300,13 @@ rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex)
         stop2 = middle2;
         today1 = last1;
         today2 = last2;
-        console.log('Start-Stop-Today');
     }
 
     if (!rc.START_COLOR) {
         rc.START_COLOR = $(start.tr).css('backgroundColor');
-        console.log('start color', rc.START_COLOR);
     }
     if (!rc.STOP_COLOR) {
         rc.STOP_COLOR = $(stop.tr).css('backgroundColor');
-        console.log('stop color', rc.STOP_COLOR);
     }
 
     rc.setSelectedPointColor(selectedCircles[start1], selectedCircles[start2], rc.START_COLOR);
@@ -421,7 +406,7 @@ rc.populateTimeAmounts = function(unit, amount) {
             max = 20;
             break;
         default:
-            console.log("Failed to populate time amounts from unit: " + unit);
+            console.error("Failed to populate time amounts from unit: " + unit);
             return;
     }
 
@@ -502,9 +487,7 @@ rc.buildDot = function(row, yValue) {
     var xFormatted = xValue.toString().split(' ')[1] + ' ' + xValue.getDate() + ', ' + xValue.getFullYear();
     yValue = yValue || row.owedCell.currency.toFloat();
     var yFormatted = row.owedCell.currency.toString();
-    var dot = [{v: xValue, f: xFormatted}, {v: yValue, f: yFormatted}];
-    console.log('dot', dot);
-    return dot;
+    return [{v: xValue, f: xFormatted}, {v: yValue, f: yFormatted}];
 };
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -530,7 +513,6 @@ window.onload = function() {
 	var $timeUnit = $("#timeUnit");
 
     if (window.isRunningLocally()) {
-	    console.log('loading');
         rc.loadTestData();
     } else {
         if (navigator.cookieEnabled !== true) {
