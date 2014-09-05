@@ -497,11 +497,12 @@ rc.drawChart = function() {
     }
 };
 
-rc.buildDot = function(row, v) {
-    var d = row.dateCell.date;
-    v = v || row.owedCell.currency.toFloat();
-    var f = row.owedCell.currency.toString();
-    var dot = [d, {v: v, f: f}];
+rc.buildDot = function(row, yValue) {
+    var xValue = row.dateCell.date;
+    var xFormatted = xValue.toString().split(' ')[1] + ' ' + xValue.getDate() + ', ' + xValue.getFullYear();
+    yValue = yValue || row.owedCell.currency.toFloat();
+    var yFormatted = row.owedCell.currency.toString();
+    var dot = [{v: xValue, f: xFormatted}, {v: yValue, f: yFormatted}];
     console.log('dot', dot);
     return dot;
 };
