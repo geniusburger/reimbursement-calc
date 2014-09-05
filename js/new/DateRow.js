@@ -1,6 +1,6 @@
 dateRowUtil = {
 	DATE_START_TEXT: "Reimbursed",
-	DATE_STOP_TEXT: "Obligation Expired",
+	DATE_STOP_TEXT: "Expired",
 	onMouseOver: function() {this.row.highlight(true, true); rc.highlightPoints(this.row);},
 	onMouseOut: function() {this.row.highlight(false, true); rc.setChartSelection(); rc.highlightPoints();},
 	add: function(date, duration, unit, amount, callback) {
