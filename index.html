@@ -6,15 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Reimbursement Calculator</title>
-    <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/rc.css" rel="stylesheet">
     <link rel="icon" type="image/ico" href="./images/favicon.ico"/>
     <link rel="apple-touch-icon" href="./images/ico64.png?v=1"/>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <script src="js/html5shiv.min.js"></script>
+      <script src="js/respond.min.js"></script>
     <![endif]-->
 
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -134,31 +132,17 @@
             </p>
         </footer>
     </div>
-
-    <script type="text/javascript">
-        window.isRunningLocally = function() {return window.location.protocol === 'file:' || window.location.hostname === 'localhost';}
-        <!--
-        if( true){//window.isRunningLocally()) {
-            document.writeln("<script src='js/util.js'></script>");
-            document.writeln("<script src='js/new/CookieManager.js'></script>");
-            document.writeln("<script src='js/cell/Cell.js'></script>");
-            document.writeln("<script src='js/cell/ButtonCell.js'></script>");
-            document.writeln("<script src='js/cell/CurrencyCell.js'></script>");
-            document.writeln("<script src='js/cell/DateCell.js'></script>");
-            document.writeln("<script src='js/cell/TextCell.js'></script>");
-            document.writeln("<script src='js/new/Currency.js'></script>");
-            document.writeln("<script src='js/new/Row.js'></script>");
-            document.writeln("<script src='js/new/TodayRow.js'></script>");
-            document.writeln("<script src='js/new/DateRow.js'></script>");
-            document.writeln("<script src='js/new/SizeRow.js'></script>");
-            document.writeln("<script src='js/rc.js'></script>");
-        } else {
-            document.writeln("<script src='js/master.min.js'></script>");
-        }
-        //-->
-    </script>
-    <script src="js/jquery-1.11.0.min.js"></script>
-    <script src="js/bootstrap.min.js"></script>
+    <script src="js/master.min.js"></script>
+    <!--<script type="text/javascript">-->
+        <!--window.isRunningLocally = function() {return window.location.protocol === 'file:' || window.location.hostname === 'localhost';}-->
+        <!--//&lt;!&ndash;-->
+        <!--if(window.isRunningLocally()) {-->
+            <!--document.writeln('<script src="js/loadOrder.js"></script>');-->
+        <!--} else {-->
+            <!--document.writeln('<script src="js/master.min.js"></script>');-->
+        <!--}-->
+        <!--//&ndash;&gt;-->
+    <!--</script>-->
 </body>
 
 </html>

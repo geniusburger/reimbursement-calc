@@ -106,7 +106,7 @@ DateRow.prototype.remove = function () {
 /**
  * Removes a row pair, redraws the chart, and saves dates.
  */
-DateRow.prototype.delete = function() {
+DateRow.prototype.deleteRow = function() {
 	this.remove();
 	rc.cookies.setDates();
 };
