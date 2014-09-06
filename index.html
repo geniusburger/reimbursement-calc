@@ -132,9 +132,11 @@
             </p>
         </footer>
     </div>
+    <script>
+        window.isRunningLocally = function() {return window.location.protocol === 'file:' || window.location.hostname === 'localhost';};
+    </script>
     <script src="js/master.min.js"></script>
     <!--<script type="text/javascript">-->
-        <!--window.isRunningLocally = function() {return window.location.protocol === 'file:' || window.location.hostname === 'localhost';}-->
         <!--//&lt;!&ndash;-->
         <!--if(window.isRunningLocally()) {-->
             <!--document.writeln('<script src="js/loadOrder.js"></script>');-->
