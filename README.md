@@ -14,7 +14,7 @@ Built using [Bootstrap](http://getbootstrap.com/) and the [Slate](http://bootswa
 
 ## Project
 
-A [PhpStorm](http://www.jetbrains.com/phpstorm/) project was used to keep everything together.
+A [PhpStorm](http://www.jetbrains.com/phpstorm/) project was used to keep everything together and provided file watchers that made automatic Less compilation and javascript minification easier.
 
 ### JavaScript Minification
 
