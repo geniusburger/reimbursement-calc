@@ -18,5 +18,5 @@ A [Sublime Text 3](http://www.sublimetext.com/3) project was used to keep everyt
 
 ### JavaScript Minification
 
-JavaScript minification is accomplished using Google's Closure Compiler.
-The resulting files are combined into master.min.js using the Node.js script in loadOrder.js.
+JavaScript minification is accomplished using Google's [Closure Compiler](https://developers.google.com/closure/compiler/).
+The resulting files are combined into master.min.js using the [Node.js](http://nodejs.org/) script in [loadOrder.js](js/loadOrder.js).
