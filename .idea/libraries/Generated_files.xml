@@ -1,0 +1,39 @@
+<component name="libraryTable">
+  <library name="Generated files" type="javaScript">
+    <properties>
+      <sourceFilesUrls>
+        <item url="file://$PROJECT_DIR$/js/cell/Cell.min.js" />
+        <item url="file://$PROJECT_DIR$/js/rc.min.js" />
+        <item url="file://$PROJECT_DIR$/js/cell/ButtonCell.min.js" />
+        <item url="file://$PROJECT_DIR$/js/new/DateRow.min.js" />
+        <item url="file://$PROJECT_DIR$/js/cell/DateCell.min.js" />
+        <item url="file://$PROJECT_DIR$/js/cell/TextCell.min.js" />
+        <item url="file://$PROJECT_DIR$/js/cell/CurrencyCell.min.js" />
+        <item url="file://$PROJECT_DIR$/js/master.min.js" />
+        <item url="file://$PROJECT_DIR$/js/util.min.js" />
+        <item url="file://$PROJECT_DIR$/js/new/TodayRow.min.js" />
+        <item url="file://$PROJECT_DIR$/js/new/Currency.min.js" />
+        <item url="file://$PROJECT_DIR$/js/new/SizeRow.min.js" />
+        <item url="file://$PROJECT_DIR$/js/new/CookieManager.min.js" />
+        <item url="file://$PROJECT_DIR$/js/new/Row.min.js" />
+      </sourceFilesUrls>
+    </properties>
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/js/cell/Cell.min.js" />
+      <root url="file://$PROJECT_DIR$/js/rc.min.js" />
+      <root url="file://$PROJECT_DIR$/js/cell/ButtonCell.min.js" />
+      <root url="file://$PROJECT_DIR$/js/new/DateRow.min.js" />
+      <root url="file://$PROJECT_DIR$/js/cell/DateCell.min.js" />
+      <root url="file://$PROJECT_DIR$/js/cell/TextCell.min.js" />
+      <root url="file://$PROJECT_DIR$/js/cell/CurrencyCell.min.js" />
+      <root url="file://$PROJECT_DIR$/js/master.min.js" />
+      <root url="file://$PROJECT_DIR$/js/util.min.js" />
+      <root url="file://$PROJECT_DIR$/js/new/TodayRow.min.js" />
+      <root url="file://$PROJECT_DIR$/js/new/Currency.min.js" />
+      <root url="file://$PROJECT_DIR$/js/new/SizeRow.min.js" />
+      <root url="file://$PROJECT_DIR$/js/new/CookieManager.min.js" />
+      <root url="file://$PROJECT_DIR$/js/new/Row.min.js" />
+    </CLASSES>
+    <SOURCES />
+  </library>
+</component>

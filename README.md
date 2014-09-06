@@ -14,7 +14,7 @@ Built using [Bootstrap](http://getbootstrap.com/) and the [Slate](http://bootswa
 
 ## Project
 
-A [Sublime Text 3](http://www.sublimetext.com/3) project was used to keep everything together.
+A [PhpStorm](http://www.jetbrains.com/phpstorm/) project was used to keep everything together.
 
 ### JavaScript Minification
 
