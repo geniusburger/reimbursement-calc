@@ -427,7 +427,7 @@ rc.populateTimeAmounts = function(unit, amount) {
 
 rc.drawChart = function() {
     if( !chartIsReady) {
-        $("#chart").css('visibility', 'hidden');
+        rc.$chart.css('visibility', 'hidden');
         console.error("Chart not ready");
     } else {
         if( !rc.chart) {
@@ -438,9 +438,9 @@ rc.drawChart = function() {
         }
 		var rows = rowUtil.getRows();
         if( rows.length <= 1) {
-            $("#chart").css('visibility', 'hidden');
+            rc.$chart.css('visibility', 'hidden');
         } else {
-	        $("#chart").css('visibility', 'visible');
+            rc.$chart.css('visibility', 'visible');
         }
         var todayDot = {
             previous : null,
@@ -490,6 +490,33 @@ rc.buildDot = function(row, yValue) {
     return [{v: xValue, f: xFormatted}, {v: yValue, f: yFormatted}];
 };
 
+rc.checkOverflow = function() {
+    var colWidth = rc.$column.width();
+
+    if( rc.lastColWidth !== colWidth) {
+        rc.lastColWidth = colWidth;
+        
+        rc.$chart.css({
+            width: colWidth + 'px',
+            height: colWidth + 'px'
+        });
+        rc.drawChart();
+
+        var needToSetSmall = rc.$table.width() > colWidth;
+        if( !rc.widthWhenChangingSmallSize) {
+            if(cellUtil.setSmallSize(needToSetSmall)) {
+                rc.widthWhenChangingSmallSize = colWidth;
+            }
+        } else {
+            if( colWidth != rc.widthWhenChangingSmallSize) {
+                if(cellUtil.setSmallSize(needToSetSmall)) {
+                    rc.widthWhenChangingSmallSize = colWidth;
+                }
+            }
+        }
+    }
+};
+
 //////////////////////////////////////////////////////////////////////////////////
 ////////     Setup
 //////////////////////////////////////////////////////////////////////////////////
@@ -506,6 +533,10 @@ window.onload = function() {
 
 	rowUtil.table = document.getElementById('tableBody');
 	sizeRowUtil.add();
+    rc.$table = $('#dateTable');
+    rc.$column = rc.$table.parent();
+    rc.$chart = $('#chart');
+    rc.checkOverflow();
 	todayRowUtil.add();
 
     rc.populateTimeAmounts('Years', 2);
@@ -531,4 +562,5 @@ window.onload = function() {
 
     $("#timeAmount").on('change', null, rc.timeAmountChanged);
 	$timeUnit.on('change', null, rc.timeUnitChanged);
+    $(window).resize(rc.checkOverflow);
 };

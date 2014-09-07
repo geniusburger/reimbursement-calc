@@ -1,6 +1,11 @@
 
 ButtonCell.prototype = Object.create(Cell.prototype);
 
+/**
+ *
+ * @param [options]
+ * @constructor
+ */
 function ButtonCell(options) {
 	Cell.apply(this, [null, options]);
 }
@@ -15,6 +20,6 @@ ButtonCell.prototype.buildContents = function() {
     return button;
 };
 
-ButtonCell.prototype.onclick = function(e) {
+ButtonCell.prototype.onclick = function() {
     $(this).closest('tr')[0].row.deleteRow();
 };

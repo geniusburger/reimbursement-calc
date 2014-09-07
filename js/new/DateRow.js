@@ -1,6 +1,8 @@
 dateRowUtil = {
 	DATE_START_TEXT: "Reimbursed",
+    DATE_SMALL_START_TEXT: "-",
 	DATE_STOP_TEXT: "Expired",
+    DATE_SMALL_STOP_TEXT: "+",
 	onMouseOver: function() {this.row.highlight(true, true); rc.highlightPoints(this.row);},
 	onMouseOut: function() {this.row.highlight(false, true); rc.setChartSelection(); rc.highlightPoints();},
 	add: function(date, duration, unit, amount, callback) {
@@ -68,7 +70,7 @@ function DateRow(date, amount, start) {
 		new DateCell(date),
 		new CurrencyCell(amount),
 		new CurrencyCell('0'),
-		new TextCell(amount.start ? dateRowUtil.DATE_START_TEXT : dateRowUtil.DATE_STOP_TEXT),
+		new TextCell(amount.start ? dateRowUtil.DATE_START_TEXT : dateRowUtil.DATE_STOP_TEXT, {smallText : amount.start ? dateRowUtil.DATE_SMALL_START_TEXT : dateRowUtil.DATE_SMALL_STOP_TEXT}),
 		new ButtonCell()]);
 	this.matchingRow = undefined;
 	this.amountCell.currency.start = start;

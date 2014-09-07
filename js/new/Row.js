@@ -1,6 +1,17 @@
 rowUtil = {
 	table: undefined,
-	getRows: function(){return util.toArray(document.querySelectorAll('#tableBody tr.exists'));},
+	getRows: function(){
+        return util.toArray(document.querySelectorAll('#tableBody tr.exists'));
+    },
+    getCells: function() {
+        var cells = [];
+        util.toArray(document.querySelectorAll('#tableBody tr')).forEach(function(tr){
+            console.log('tr', tr, tr.row.cells);
+            cells = cells.concat(tr.row.cells);
+        });
+        console.log('all cells', cells);
+        return cells;
+    },
 	updateOwed: function() {
 		var owed = new Currency('0');
 		var trs = rowUtil.getRows();
@@ -88,4 +99,10 @@ Row.prototype.isStart = function() {
 
 Row.prototype.isStop = function() {
     return this instanceof DateRow && !this.amountCell.currency.start;
+};
+
+Row.prototype.setSmallSize = function(smallSize) {
+    this.cells.forEach(function(cell) {
+        cell.setSmallSize(smallSize);
+    });
 };

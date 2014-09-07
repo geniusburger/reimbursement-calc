@@ -1,6 +1,11 @@
 
 CurrencyCell.prototype = Object.create(Cell.prototype);
 
+/**
+ * @param currency
+ * @param [options]
+ * @constructor
+ */
 function CurrencyCell(currency, options) {
 	Cell.apply(this, ['text-right', options]);
 	this.currency = currency;
@@ -12,12 +17,15 @@ function CurrencyCell(currency, options) {
 
 CurrencyCell.prototype.update = function(currency) {
 	this.currency = new Currency(currency);
-	util.removeChildren(this.contentHolder);
-	this.contentHolder.appendChild(this.formatCell());
+    this.rebuildCell();
 }
 
 CurrencyCell.prototype.buildContents = function() {
-	return document.createTextNode(this.currency.toString());
+    var text = this.currency.toString();
+    if( cellUtil.smallSize) {
+        text = text.substring(0, text.lastIndexOf('.'));
+    }
+	return document.createTextNode(text);
 };
 
 CurrencyCell.prototype.toString = function() {
