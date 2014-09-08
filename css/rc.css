@@ -83,7 +83,7 @@ tr.date-row td > div.animateOut {
   transition: 0.3s linear;
 }
 tr.highlight td div {
-  color: #272b30 !important;
+  color: black !important;
 }
 tr.highlight.start {
   background-color: #ee5f5b !important;
