@@ -52,7 +52,7 @@ dateRowUtil = {
 		for( var i = 0; i < trs.length; i++) {
 			trs[i].row.remove();
 		}
-		rc.cookies.setDates();
+		rc.storage.setDates();
 	},
     removeAfterAnimation: function() {
         $(this).parents('tr').remove();
@@ -110,7 +110,7 @@ DateRow.prototype.remove = function () {
  */
 DateRow.prototype.deleteRow = function() {
 	this.remove();
-	rc.cookies.setDates();
+	rc.storage.setDates();
 };
 
 DateRow.prototype.highlight = function (enable, recursive) {

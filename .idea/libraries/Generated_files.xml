@@ -31,7 +31,7 @@
       <root url="file://$PROJECT_DIR$/js/new/TodayRow.min.js" />
       <root url="file://$PROJECT_DIR$/js/new/Currency.min.js" />
       <root url="file://$PROJECT_DIR$/js/new/SizeRow.min.js" />
-      <root url="file://$PROJECT_DIR$/js/new/CookieManager.min.js" />
+      <root url="file://$PROJECT_DIR$/js/new/StorageManager.min.js" />
       <root url="file://$PROJECT_DIR$/js/new/Row.min.js" />
     </CLASSES>
     <SOURCES />

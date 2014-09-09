@@ -1,7 +1,7 @@
 
 loadOrder = [
     'js/util.js',
-    'js/new/CookieManager.js',
+    'js/new/StorageManager.js',
     'js/cell/Cell.js',
     'js/cell/ButtonCell.js',
     'js/cell/CurrencyCell.js',

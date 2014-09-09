@@ -67,7 +67,7 @@ rc.CHART_OPTIONS = {
 ////////     Variables
 //////////////////////////////////////////////////////////////////////////////////
 
-rc.cookies = undefined;
+rc.storage = undefined;
 rc.chart = undefined;
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -112,23 +112,7 @@ rc.updateNextExpiration = function(nextExpiration) {
 
 rc.addDate = function(date, amount) {
 	rc.loadDate(date, amount);
-	rc.cookies.setDates();
-};
-
-rc.loadDatesFromCookie = function(cookie) {
-	if( typeof cookie === 'undefined') {
-		cookie = util.getCookie('dates');
-	}
-
-	if (cookie !== null && cookie !== "") {
-		var dates = cookie.split(":");
-		for (var i = 0; i < dates.length; i++) {
-			var values = dates[i].split("@");
-			rc.addDate(new Date(values[1]), new Currency(values[0]));
-		}
-	}
-
-	rc.drawChart();
+	rc.storage.setDates();
 };
 
 /**
@@ -365,7 +349,7 @@ rc.getInput = function() {
 		dateInput.val("");
 		amountInput.val("");
 		rc.addDate(date, amount);
-		rc.cookies.setDates();
+		rc.storage.setDates();
 		rc.drawChart();
 		dateInput.focus();
 	}
@@ -384,12 +368,12 @@ rc.updateReimbursementTime = function() {
 };
 
 rc.timeAmountChanged = function() {
-    util.setCookie("timeAmount", this.selectedOptions[0].value);
+    rc.storage.setTimeAmount(this.selectedOptions[0].value);
     rc.updateReimbursementTime();
 };
 
 rc.timeUnitChanged = function() {
-    util.setCookie("timeUnit", this.selectedOptions[0].value);
+    rc.storage.setTimeUnit(this.selectedOptions[0].value);
     rc.updateReimbursementTime();
 };
 
@@ -523,7 +507,7 @@ rc.checkOverflow = function() {
 
 window.onload = function() {
 
-	rc.cookies = new CookieManager();
+	rc.storage = new StorageManager();
 
     $("#inputButton").on('click', null, rc.getInput);
     $("#testButton").on('click', null, rc.loadTestData);
@@ -546,18 +530,18 @@ window.onload = function() {
     if (window.isRunningLocally()) {
         rc.loadTestData();
     } else {
-        if (navigator.cookieEnabled !== true) {
+        if (rc.storage.displayCookieWarning) {
             $("#cookieAlert").removeClass("hidden");
         }
-        var timeAmountCookie = rc.cookies.getCookie("timeAmount");
-        var timeUnitCookie = rc.cookies.getCookie("timeUnit");
+        var storedTimeAmount = rc.storage.getTimeAmount();
+        var storedTimeUnit = rc.storage.getTimeUnit();
 
-        if (timeAmountCookie !== null && timeUnitCookie !== null && timeAmountCookie !== "" && timeUnitCookie !== "") {
-	        $timeUnit.val(timeUnitCookie);
-            rc.populateTimeAmounts(timeUnitCookie, timeAmountCookie);
+        if (storedTimeAmount !== null && storedTimeUnit !== null && storedTimeAmount !== "" && storedTimeUnit !== "") {
+	        $timeUnit.val(storedTimeUnit);
+            rc.populateTimeAmounts(storedTimeUnit, storedTimeAmount);
         }
 
-	    rc.cookies.getDates().forEach(function(date){rc.loadDate(date);});
+	    rc.storage.getDates().forEach(function(date){rc.loadDate(date);});
     }
 
     $("#timeAmount").on('change', null, rc.timeAmountChanged);
