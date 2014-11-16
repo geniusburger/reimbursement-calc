@@ -14,7 +14,7 @@ loadOrder = [
     'js/new/SizeRow.js',
     'js/rc.js',
     'js/jquery-1.11.0.min.js',
-    'js/bootstrap.min.js',
+    'js/bootstrap.min.js'
 ];
 
 // check if not in node
