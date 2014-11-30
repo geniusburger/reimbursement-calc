@@ -9,7 +9,7 @@ function PageViewModel() {
     self.timeAmount = ko.observable(2);
     self.lastTimeAmount = 1;
     self.timeUnit = ko.observable('Years');
-    self.rows = ko.observableArray();
+    self.rows = ko.observableArray();//.extend({ rateLimit: {timeout: 50, method: 'notifyWhenChangesStop '}});
     self.isSmall = ko.observable(false);
     self.daysLeft = ko.observable(0);
     self.nextRow = null;
@@ -79,6 +79,22 @@ function PageViewModel() {
             self.daysLeft(days);
         }
     });
+
+    self.updateDuration = function() {
+        var dates = [];
+        self.rows().forEach(function(row){
+            if( row.isStart && !row.isToday) {
+                dates.push({date: row.date, amount: row.amount});
+            }
+        });
+        self.deleteAll();
+        dates.forEach(function(row) {
+            self.addDate(row.date, row. amount);
+        });
+    };
+
+    self.timeAmount.subscribe(self.updateDuration);
+    self.timeUnit.subscribe(self.updateDuration);
 
     self.deleteAll = function() {
         self.rows.remove(function(row){
