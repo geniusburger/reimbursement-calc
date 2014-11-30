@@ -45,6 +45,9 @@ td {
 tr.size-row td {
   padding: 0 8px !important;
   border: 0 !important;
+  height: 0px;
+  visibility: hidden !important;
+  overflow-y: hidden !important;
 }
 tr.size-row td div {
   height: 0px;

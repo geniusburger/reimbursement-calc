@@ -30,10 +30,11 @@ function PageViewModel() {
 
     self.deleteAll = function() {
         self.rows.removeAll();
-        self.rows.push(new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, true));
+        self.rows.push(new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, 'Today'));
     };
 
-    self.rows.push(new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, true));
+    self.sizeRow = new RowViewModel(new Date(0), new Currency('0'), true, self.isSmall, 'SizeRow');
+    self.rows.push(new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, 'Today'));
 }
 
 PageViewModel.prototype.populateTimeAmounts = function() {
@@ -148,13 +149,13 @@ PageViewModel.prototype.loadTestData = function() {
 };
 
 PageViewModel.prototype.rowMouseOver = function(row) {
-    if( !row.isToday) {
+    if( !row.isToday && !row.isSizeRow) {
         row.isHighlighted(true).matchingRow.isHighlighted(true);
     }
 };
 
 PageViewModel.prototype.rowMouseOut = function(row) {
-    if( !row.isToday) {
+    if( !row.isToday && !row.isSizeRow) {
         row.isHighlighted(false).matchingRow.isHighlighted(false);
     }
 };

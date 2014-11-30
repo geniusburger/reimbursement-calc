@@ -1,45 +1,53 @@
 
-function RowViewModel(date, amount, isStart, isSmall, isToday) {
+function RowViewModel(date, amount, isStart, isSmall, option) {
     this.owed = ko.observable(new Currency('0'));
     this.isHighlighted = ko.observable(false);
     this.date = date;
     this.amount = amount;
     this.isStart = isStart;
-    this.isToday = isToday;
+    this.isToday = option === 'Today';
+    this.isSizeRow = option === 'SizeRow';
     this.isSmall = isSmall;
     this.matchingRow = null;
 
     this.formattedDate = ko.pureComputed(function() {
         var small = this.isSmall();
-        if( this.isToday ) {
+        if( this.sizeRow) {
+            return small ? '00/00/0000' : 'OOO OOO 00 0000';
+        } else if( this.isToday ) {
             return 'Today';
         } else {
             return small ? this.date.toLocaleDateString() : this.date.toDateString();
         }
     }, this);
 
-    this.formattedAmount = ko.pureComputed(function(){
+    this.formattedAmount = ko.pureComputed(function() {
         var text = this.amount.toString();
         var small = this.isSmall();
-        if( this.isToday ) {
+        if( this.isSizeRow) {
+            return small ? '$00,000' : '$00,000.00';
+        } else if( this.isToday ) {
             return '';
-        } else if( small) {
-            text = text.substring(0, text.lastIndexOf('.'));
+        } else {
+            return small ? text.substring(0, text.lastIndexOf('.')) : text;
         }
-        return text;
     }, this);
 
     this.formattedOwed = ko.pureComputed(function() {
         var text = this.owed().toString();
-        if( this.isSmall()) {
-            text = text.substring(0, text.lastIndexOf('.'));
+        var small = this.isSmall();
+        if( this.isSizeRow) {
+            return small ? '$00,000' : '$00,000.00';
+        } else {
+            return small ? text.substring(0, text.lastIndexOf('.')) : text;
         }
-        return text;
     }, this);
 
     this.formattedType = ko.pureComputed(function() {
         var small = this.isSmall();
-        if( this.isToday) {
+        if( this.isSizeRow) {
+            return small ? '+' : 'Reimbursed';
+        } else if( this.isToday) {
             return '';
         } else if(this.isStart) {
             return small ? '+' : 'Reimbursed';

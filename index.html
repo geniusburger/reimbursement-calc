@@ -88,8 +88,8 @@
             <strong>Warning!</strong>Cookies must be enabled if you want to save your dates!
         </div>
         <div class="page-header">
-            <label>
-                <input type="checkbox" class="pull-right" data-bind="checked: isSmall">isSmall
+            <label class="pull-right">
+                <input type="checkbox" data-bind="checked: isSmall">isSmall
             </label>
             <h1>
                 Dates
@@ -112,7 +112,15 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody id="tableBody" data-bind="foreach: rows">
+                    <tbody id="tableBody">
+                        <tr class="size-row">
+                            <td><div data-bind="text: sizeRow.formattedDate"></div></td>
+                            <td><div data-bind="text: sizeRow.formattedType"></div></td>
+                            <td><div data-bind="text: sizeRow.formattedAmount"></div></td>
+                            <td><div data-bind="text: sizeRow.formattedOwed"></div></td>
+                            <td><div><button type="button" class="close" aria-hidden="true">×</button></div></td>
+                        </tr>
+                        <!-- ko foreach: rows -->
                         <tr data-bind="css: {start: isStart, stop: !isStart, highlight: isHighlighted(), active: isToday}, event: {mouseover: $root.rowMouseOver, mouseout: $root.rowMouseOut}">
                             <td data-bind="text: formattedDate" class="text-right"></td>
                             <td data-bind="text: formattedType" class="text-center"></td>
@@ -120,6 +128,7 @@
                             <td data-bind="text: formattedOwed" class="text-right"></td>
                             <td><button type="button" class="close" aria-hidden="true" data-bind="click: $root.removePair, visible: !isToday">×</button></td>
                         </tr>
+                        <!-- /ko -->
                     </tbody>
                 </table>
             </div>
