@@ -42,6 +42,9 @@ footer p {
 td {
   vertical-align: middle !important;
 }
+#dateTable {
+  white-space: nowrap;
+}
 tr.size-row td {
   padding: 0 8px !important;
   border: 0 !important;

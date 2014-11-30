@@ -69,6 +69,7 @@ rc.CHART_OPTIONS = {
 
 rc.storage = undefined;
 rc.chart = undefined;
+rc.wasSmall = false;
 
 //////////////////////////////////////////////////////////////////////////////////
 ////////     Functions
@@ -417,32 +418,30 @@ rc.buildDot = function(row, yValue) {
     return [{v: xValue, f: xFormatted}, {v: yValue, f: yFormatted}];
 };
 
+rc.setSmall = function(newSmall) {
+    if( newSmall !== rc.wasSmall) {
+        rc.viewModel.isSmall(newSmall);
+        rc.wasSmall = newSmall;
+        return true;
+    }
+    return false;
+};
+
 rc.checkOverflow = function() {
     var colWidth = rc.$column.width();
-
     if( rc.lastColWidth !== colWidth) {
         rc.lastColWidth = colWidth;
-        
+
         //rc.$chart.css({
         //    width: colWidth + 'px',
         //    height: colWidth + 'px'
         //});
         //rc.drawChart();
 
-        var needToSetSmall = rc.$table.width() > colWidth;
-        rc.viewModel.isSmall(needToSetSmall);
-
-        //if( !rc.widthWhenChangingSmallSize) {
-        //    if(cellUtil.setSmallSize(needToSetSmall)) {
-        //        rc.widthWhenChangingSmallSize = colWidth;
-        //    }
-        //} else {
-        //    if( colWidth != rc.widthWhenChangingSmallSize) {
-        //        if(cellUtil.setSmallSize(needToSetSmall)) {
-        //            rc.widthWhenChangingSmallSize = colWidth;
-        //        }
-        //    }
-        //}
+        if( !rc.largeTableWidth) {
+            rc.largeTableWidth = rc.$table.width();
+        }
+        rc.viewModel.isSmall(rc.largeTableWidth > colWidth);
     }
 };
 
