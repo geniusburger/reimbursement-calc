@@ -1,7 +1,8 @@
 
-function PageViewModel() {
+function PageViewModel(storage) {
     var self = this;
 
+    self.storage = storage;
     self.date = ko.observable();
     self.dateError = ko.observable(false);
     self.amount = ko.observable();
@@ -13,11 +14,11 @@ function PageViewModel() {
     self.isSmall = ko.observable(false);
     self.daysLeft = ko.observable(0);
     self.nextRow = null;
-
+    self.loading = false;
     self.timeUnitOptions = ['Days', 'Months', 'Years'];
+    self.sizeRow = new RowViewModel(new Date(0), new Currency('0'), false, self.isSmall, 'SizeRow');
+    self.todayRow = new RowViewModel(new Date(), new Currency('0'), false, self.isSmall, 'Today');
 
-    self.sizeRow = new RowViewModel(new Date(0), new Currency('0'), true, self.isSmall, 'SizeRow');
-    self.todayRow = new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, 'Today');
     self.rows.push(self.todayRow);
 
     self.timeAmountOptions = ko.computed(function(){
@@ -59,6 +60,7 @@ function PageViewModel() {
         changes.forEach(function(row) {
             row.update(owed);
         });
+        self.storage.setDates(changes);
         var todayIndex = self.rows.indexOf(self.todayRow);
         if( todayIndex !== -1 && todayIndex < self.rows().length-1) {
             self.nextRow = self.rows()[todayIndex+1];
@@ -83,7 +85,7 @@ function PageViewModel() {
     self.updateDuration = function() {
         var dates = [];
         self.rows().forEach(function(row){
-            if( row.isStart && !row.isToday) {
+            if( row.isStart) {
                 dates.push({date: row.date, amount: row.amount});
             }
         });
@@ -105,18 +107,15 @@ function PageViewModel() {
     self.getInput = function() {
         console.log('getInput', this.date(), this.amount(), this.timeAmount(), this.timeUnit());
 
-        //$("#inputButton").blur();
         var date = new Date(this.date());
         var amount = new Currency(this.amount());
         var valid = true;
 
         if (!amount.valid) {
             valid = false;
-            self.amountError(true);
             //amountInput.focus();
-        } else {
-            self.amountError(false);
         }
+        self.amountError(!amount.valid);
 
         if (util.isInvalidDate(date)) {
             valid = false;
@@ -182,6 +181,14 @@ PageViewModel.prototype.loadTestData = function() {
     ].forEach(function(row){
         this.addDate(new Date(row[1]), new Currency(row[0]));
     }, this);
+};
+
+PageViewModel.prototype.loadSavedData = function() {
+    this.loading = true;
+    this.storage.getDates().forEach(function(row) {
+        this.addDate(new Date(row[1]), new Currency(row[0]));
+    }, this);
+    this.loading = false;
 };
 
 PageViewModel.prototype.rowMouseOver = function(row) {

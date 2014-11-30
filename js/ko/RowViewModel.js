@@ -46,11 +46,11 @@ function RowViewModel(date, amount, isStart, isSmall, option) {
     this.formattedType = ko.pureComputed(function() {
         var small = this.isSmall();
         if( this.isSizeRow) {
-            return small ? '+' : 'Reimbursed';
+            return small ? '+' : 'Reimbursed longer message for testing and some stuff';
         } else if( this.isToday) {
             return '';
         } else if(this.isStart) {
-            return small ? '+' : 'Reimbursed';
+            return small ? '+' : 'Reimbursed longer message for testing and some stuff';
         } else {
             return small ? '-' : 'Expired';
         }

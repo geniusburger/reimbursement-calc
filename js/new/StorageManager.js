@@ -41,23 +41,25 @@ StorageManager.prototype.getDates = function() {
 			if( values.length === 2) {
 				dates.push(values);
 			} else {
-				console.warn('invalid date cookie', date);
+				console.warn('invalid saved date value', date);
 			}
 		});
 	}
 	return dates;
 };
 
-StorageManager.prototype.setDates = function(dates) {
+StorageManager.prototype.setDates = function(rows) {
 	var cookie = '';
-	if( typeof dates === 'undefined') {
-		dates = dateRowUtil.getStartRows();
+	if( typeof rows === 'undefined') {
+        rows = dateRowUtil.getStartRows();
 	}
-	dates.forEach(function(tr, notFirst) {
+    rows.filter(function(row){
+        return row.isStart;
+    }).forEach(function(row, notFirst) {
 		if( notFirst) {
 			cookie += ':';
 		}
-		cookie += tr.row.amountCell.toString() + '@' + tr.row.dateCell.toString();
+		cookie += row.amount.toString() + '@' + row.date.toDateString();
 	});
 	this.set(this.names.DATES, cookie);
 };

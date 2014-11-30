@@ -14,6 +14,7 @@ loadOrder = [
     'js/new/TodayRow.js',
     'js/new/DateRow.js',
     'js/new/SizeRow.js',
+    'js/ko/CustomBindings.js',
     'js/ko/RowViewModel.js',
     'js/ko/PageViewModel.js',
     'js/rc.js',

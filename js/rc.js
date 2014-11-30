@@ -423,24 +423,26 @@ rc.checkOverflow = function() {
     if( rc.lastColWidth !== colWidth) {
         rc.lastColWidth = colWidth;
         
-        rc.$chart.css({
-            width: colWidth + 'px',
-            height: colWidth + 'px'
-        });
-        rc.drawChart();
+        //rc.$chart.css({
+        //    width: colWidth + 'px',
+        //    height: colWidth + 'px'
+        //});
+        //rc.drawChart();
 
         var needToSetSmall = rc.$table.width() > colWidth;
-        if( !rc.widthWhenChangingSmallSize) {
-            if(cellUtil.setSmallSize(needToSetSmall)) {
-                rc.widthWhenChangingSmallSize = colWidth;
-            }
-        } else {
-            if( colWidth != rc.widthWhenChangingSmallSize) {
-                if(cellUtil.setSmallSize(needToSetSmall)) {
-                    rc.widthWhenChangingSmallSize = colWidth;
-                }
-            }
-        }
+        rc.viewModel.isSmall(needToSetSmall);
+
+        //if( !rc.widthWhenChangingSmallSize) {
+        //    if(cellUtil.setSmallSize(needToSetSmall)) {
+        //        rc.widthWhenChangingSmallSize = colWidth;
+        //    }
+        //} else {
+        //    if( colWidth != rc.widthWhenChangingSmallSize) {
+        //        if(cellUtil.setSmallSize(needToSetSmall)) {
+        //            rc.widthWhenChangingSmallSize = colWidth;
+        //        }
+        //    }
+        //}
     }
 };
 
@@ -451,29 +453,15 @@ rc.checkOverflow = function() {
 window.onload = function() {
 
 	rc.storage = new StorageManager();
+    rc.viewModel = new PageViewModel(rc.storage);
+    ko.applyBindings(rc.viewModel);
+    rc.viewModel.loadSavedData();
 
-    var vm = new PageViewModel();
-    ko.applyBindings(vm);
-    vm.loadTestData();
+    rc.$table = $('#dateTable');
+    rc.$column = rc.$table.parent();
+    rc.$chart = $('#chart');
+    rc.checkOverflow();
 
-    //$("#inputButton").on('click', null, rc.getInput);
-    //$("#testButton").on('click', null, rc.loadTestData);
-    //$("#clearButton").on('click', null, dateRowUtil.deleteAll);
-    //$("#inputAmount").keypress(rc.enterCatch);
-    //$("#inputDate").keypress(rc.enterCatch);
-    //
-    //rowUtil.table = document.getElementById('tableBody');
-    //sizeRowUtil.add();
-    //rc.$table = $('#dateTable');
-    //rc.$column = rc.$table.parent();
-    //rc.$chart = $('#chart');
-    //rc.checkOverflow();
-    //todayRowUtil.add();
-    //
-    //rc.populateTimeAmounts('Years', 2);
-    //
-    //var $timeUnit = $("#timeUnit");
-    //
     //if (window.isRunningLocally()) {
     //    rc.loadTestData();
     //} else {
@@ -491,7 +479,6 @@ window.onload = function() {
 	 //   rc.storage.getDates().forEach(function(date){rc.loadDate(date);});
     //}
     //
-    //$("#timeAmount").on('change', null, rc.timeAmountChanged);
-    //$timeUnit.on('change', null, rc.timeUnitChanged);
-    //$(window).resize(rc.checkOverflow);
+
+    $(window).resize(rc.checkOverflow);
 };
