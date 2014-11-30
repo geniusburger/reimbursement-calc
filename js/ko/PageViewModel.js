@@ -60,7 +60,9 @@ function PageViewModel(storage) {
         changes.forEach(function(row) {
             row.update(owed);
         });
-        self.storage.setDates(changes);
+        if( !self.loading) {
+            self.storage.setDates(changes);
+        }
         var todayIndex = self.rows.indexOf(self.todayRow);
         if( todayIndex !== -1 && todayIndex < self.rows().length-1) {
             self.nextRow = self.rows()[todayIndex+1];

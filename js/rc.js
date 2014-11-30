@@ -332,27 +332,6 @@ rc.getInput = function() {
     return false;
 };
 
-rc.updateReimbursementTime = function() {
-    var dates = [];
-	dateRowUtil.getStartRows().forEach(function(tr){
-		dates.push([
-			tr.row.amountCell.toString(),
-			tr.row.dateCell.toString()]);
-	});
-	dateRowUtil.removeAll();
-	dates.forEach(function(date){rc.loadDate(date);});
-};
-
-rc.timeAmountChanged = function() {
-    rc.storage.setTimeAmount(this.selectedOptions[0].value);
-    rc.updateReimbursementTime();
-};
-
-rc.timeUnitChanged = function() {
-    rc.storage.setTimeUnit(this.selectedOptions[0].value);
-    rc.updateReimbursementTime();
-};
-
 rc.drawChart = function() {
     if( !chartIsReady) {
         rc.$chart.css('visibility', 'hidden');

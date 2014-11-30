@@ -4,16 +4,7 @@ loadOrder = [
     'js/3rd-party/knockout.viewmodel.min.js',
     'js/util.js',
     'js/new/StorageManager.js',
-    'js/cell/Cell.js',
-    'js/cell/ButtonCell.js',
-    'js/cell/CurrencyCell.js',
-    'js/cell/DateCell.js',
-    'js/cell/TextCell.js',
     'js/new/Currency.js',
-    'js/new/Row.js',
-    'js/new/TodayRow.js',
-    'js/new/DateRow.js',
-    'js/new/SizeRow.js',
     'js/ko/CustomBindings.js',
     'js/ko/RowViewModel.js',
     'js/ko/PageViewModel.js',
@@ -64,6 +55,7 @@ if( typeof exports !== 'undefined' && this.exports !== exports) {
 
     files.forEach(function(name){
         fs.appendFileSync(outputFile, fs.readFileSync(name));
+        fs.appendFileSync(outputFile, '\n');
     });
 
 } else {
