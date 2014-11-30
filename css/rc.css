@@ -105,7 +105,6 @@ table {
   margin-top: 15px;
 }
 #nextEvent {
-  visibility: hidden;
   text-align: center;
 }
 #nextEvent div {

@@ -93,23 +93,6 @@ rc.completeLoadDate = function() {
     setTimeout(rc.highlightPoints, 1000);
 };
 
-rc.updateNextExpiration = function(nextExpiration) {
-    var nextEvent = document.getElementById('nextEvent');
-    if( nextExpiration === null) {
-        nextEvent.style.visibility = 'hidden';
-    } else {
-        nextEvent.style.visibility = 'visible';
-        document.getElementById('daysLeft').innerHTML = nextExpiration.days;
-        var textDiv = document.querySelector('#nextEvent>div');
-        textDiv.onmouseover = function() {
-            rc.hoverPointHandler(nextExpiration);
-        };
-        textDiv.onmouseout = function() {
-            rc.unhoverPointHandler();
-        }
-    }
-};
-
 rc.addDate = function(date, amount) {
 	rc.loadDate(date, amount);
 	rc.storage.setDates();
@@ -130,14 +113,6 @@ rc.loadTestData = function() {
 	].forEach(function(date){
 		rc.addDate(date);
 	});
-};
-
-rc.getSelectedTimeAmount = function() {
-    return util.getSelected('timeAmount');
-};
-
-rc.getSelectedTimeUnit = function() {
-    return util.getSelected('timeUnit');
 };
 
 /**
@@ -375,38 +350,6 @@ rc.timeAmountChanged = function() {
 rc.timeUnitChanged = function() {
     rc.storage.setTimeUnit(this.selectedOptions[0].value);
     rc.updateReimbursementTime();
-};
-
-rc.populateTimeAmounts = function(unit, amount) {
-	var max = 0;
-    switch (unit) {
-        case "Days":
-            max = 30;
-            break;
-        case "Months":
-            max = 12;
-            break;
-        case "Years":
-            max = 20;
-            break;
-        default:
-            console.error("Failed to populate time amounts from unit: " + unit);
-            return;
-    }
-
-    var timeAmount = document.getElementById("timeAmount");
-    util.removeChildren(timeAmount);
-    for (var i = 1; i <= max; i++) {
-        var option = document.createElement("option");
-        option.innerHTML = i;
-        timeAmount.appendChild(option);
-    }
-
-    if (amount > max) {
-        amount = max;
-    }
-
-    timeAmount.options[amount - 1].selected = true;
 };
 
 rc.drawChart = function() {

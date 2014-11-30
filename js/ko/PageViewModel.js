@@ -11,11 +11,14 @@ function PageViewModel() {
     self.timeUnit = ko.observable('Years');
     self.rows = ko.observableArray();
     self.isSmall = ko.observable(false);
+    self.daysLeft = ko.observable(0);
+    self.nextRow = null;
 
     self.timeUnitOptions = ['Days', 'Months', 'Years'];
 
     self.sizeRow = new RowViewModel(new Date(0), new Currency('0'), true, self.isSmall, 'SizeRow');
-    self.rows.push(new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, 'Today'));
+    self.todayRow = new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, 'Today');
+    self.rows.push(self.todayRow);
 
     self.timeAmountOptions = ko.computed(function(){
         var amount = this.timeAmount();
@@ -50,18 +53,37 @@ function PageViewModel() {
         self.rows.remove(row.matchingRow);
     };
 
+    // Update owed column automatically
     self.rows.subscribe(function(changes) {
         var owed = new Currency('0');
-        changes.forEach(function(row, i, a) {
-            console.log('updating row ' + i + ' of ' + a.length + ' with owed ' + owed.toString() + ', before: ' + row.owed());
+        changes.forEach(function(row) {
             row.update(owed);
-            console.log('updating row ' + i + ' of ' + a.length + ' with owed ' + owed.toString() + ', after:  ' + row.owed());
         });
+        var todayIndex = self.rows.indexOf(self.todayRow);
+        if( todayIndex !== -1 && todayIndex < self.rows().length-1) {
+            self.nextRow = self.rows()[todayIndex+1];
+            var futureDate = util.stripTime(self.nextRow.date);
+            var todayDate = util.stripTime(self.todayRow.date);
+            var days = (futureDate - todayDate) / 86400000;
+            var floor = Math.floor(days);
+
+            if( floor !== days) {
+                var ceil = Math.ceil(days);
+                if( (ceil - days) < (days - floor)) {
+                    days = ceil;
+                } else {
+                    days = floor;
+                }
+            }
+
+            self.daysLeft(days);
+        }
     });
 
     self.deleteAll = function() {
-        self.rows.removeAll();
-        self.rows.push(new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, 'Today'));
+        self.rows.remove(function(row){
+            return !row.isToday;
+        });
     };
 
     self.getInput = function() {
