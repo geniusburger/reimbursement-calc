@@ -1,41 +1,44 @@
 
-function RowViewModel(date, amount, owed, isStart, isSmall) {
-    var self = this;
+function RowViewModel(date, amount, isStart, isSmall, name) {
+    this.date = ko.observable(date);
+    this.amount = ko.observable(amount);
+    this.owed = ko.observable(new Currency('0'));
+    this.isStart = ko.observable(isStart);
+    this.isHighlighted = ko.observable(false);
+    this.isSmall = isSmall;
+    this.matchingRow = null;
+    this.name = name;
 
-    self.date = ko.observable(date);
-    self.amount = ko.observable(amount);
-    self.owed = ko.observable(owed);
-    self.isStart = ko.observable(isStart);
-    self.isSmall = isSmall;
-    self.matchingRow = null;
+    this.formattedDate = ko.pureComputed(function() {
+        return this.isSmall() ? this.date().toLocaleDateString() : this.date().toDateString();
+    }, this);
 
-    self.formattedDate = ko.computed(function() {
-        return self.isSmall() ? self.date().toLocaleDateString() : self.date().toDateString();
-    });
-
-    self.formattedAmount = ko.computed(function(){
-        return self.amount().toString();
-    });
-
-    self.formattedOwed = ko.computed(function() {
-        return self.amount().toString();
-    });
-
-    self.formattedType = ko.computed(function() {
-        if(self.isStart()) {
-            return self.isSmall() ? '+' : 'Reimbursed';
-        } else {
-            return self.isSmall() ? '-' : 'Expired';
+    this.formattedAmount = ko.pureComputed(function(){
+        var text = this.amount().toString();
+        if( this.isSmall()) {
+            text = text.substring(0, text.lastIndexOf('.'));
         }
-    });
+        return text;
+    }, this);
+
+    this.formattedOwed = ko.pureComputed(function() {
+        var text = this.owed().toString();
+        if( this.isSmall()) {
+            text = text.substring(0, text.lastIndexOf('.'));
+        }
+        return text;
+    }, this);
+
+    this.formattedType = ko.pureComputed(function() {
+        if(this.isStart()) {
+            return this.isSmall() ? '+' : 'Reimbursed';
+        } else {
+            return this.isSmall() ? '-' : 'Expired';
+        }
+    }, this);
 }
 
 RowViewModel.prototype.update = function(currency) {
     currency.adjust(this.amount());
-    this.owed().update(currency);
-    return currency;
-};
-
-RowViewModel.prototype.remove = function() {
-    console.log('removing myself ', this)
+    this.owed(new Currency(currency));
 };

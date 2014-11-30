@@ -18,6 +18,15 @@ function PageViewModel() {
         self.rows.remove(row);
         self.rows.remove(row.matchingRow);
     };
+
+    self.rows.subscribe(function(changes) {
+        var owed = new Currency('0');
+        changes.forEach(function(row, i, a) {
+            console.log('updating row ' + i + ' of ' + a.length + ' with owed ' + owed.toString() + ', before: ' + row.owed());
+            row.update(owed);
+            console.log('updating row ' + i + ' of ' + a.length + ' with owed ' + owed.toString() + ', after:  ' + row.owed());
+        });
+    });
 }
 
 PageViewModel.prototype.populateTimeAmounts = function() {
@@ -85,7 +94,7 @@ PageViewModel.prototype.getInput = function() {
     return false;
 };
 
-PageViewModel.prototype.addDate = function(date, amount) {
+PageViewModel.prototype.addDate = function(date, amount, name) {
     var future = new Date(date);
     var duration = Number(this.timeAmount());
     switch (this.timeUnit()) {
@@ -103,8 +112,8 @@ PageViewModel.prototype.addDate = function(date, amount) {
             break;
     }
 
-    var startRow = new RowViewModel(date, amount, 0, true, this.isSmall);
-    var stopRow = new RowViewModel(future, new Currency(amount), 0, false, this.isSmall);
+    var startRow = new RowViewModel(date, amount, true, this.isSmall, name);
+    var stopRow = new RowViewModel(future, new Currency(amount), false, this.isSmall, name);
 
     startRow.matchingRow = stopRow;
     stopRow.matchingRow = startRow;
@@ -119,18 +128,26 @@ PageViewModel.prototype.addDate = function(date, amount) {
 
 PageViewModel.prototype.loadTestData = function() {
     [
-        ["$7802.05", "7/6/2012"],
-        ["$6931.49", "2/1/2013"],
-        ["$7568.49", "4/12/2013"],
-        ["$3802.00", "1/6/2012"],
-        ["$3658.51", "4/13/2012"],
-        ["$775.00", "12/21/2012"],
-        ["$4350.00", "6/28/2013"]
+        ["$7802.05", "7/6/2012", 'first'],
+        ["$6931.49", "2/1/2013", 'second'],
+        ["$7568.49", "4/12/2013", 'third'],
+        ["$3802.00", "1/6/2012", 'fourth'],
+        ["$3658.51", "4/13/2012", 'fifth'],
+        ["$775.00", "12/21/2012", 'sixth'],
+        ["$4350.00", "6/28/2013", 'seventh']
     ].forEach(function(row){
-        this.addDate(new Date(row[1]), new Currency(row[0]));
+        this.addDate(new Date(row[1]), new Currency(row[0]), row[2]);
     }, this);
 };
 
 PageViewModel.prototype.deleteAll = function() {
     this.rows.removeAll();
+};
+
+PageViewModel.prototype.rowMouseOver = function(row) {
+    row.isHighlighted(true).matchingRow.isHighlighted(true);
+};
+
+PageViewModel.prototype.rowMouseOut = function(row) {
+    row.isHighlighted(false).matchingRow.isHighlighted(false);
 };

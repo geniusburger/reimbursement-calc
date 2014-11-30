@@ -88,10 +88,13 @@
             <strong>Warning!</strong>Cookies must be enabled if you want to save your dates!
         </div>
         <div class="page-header">
+            <label>
+                <input type="checkbox" class="pull-right" data-bind="checked: isSmall">isSmall
+            </label>
             <h1>
                 Dates
-                <button type="button" id="testButton" class="btn btn-info pull-right" data-bind="click: loadTestData, visible: rows().length == 0">Load Sample Dates</button>
-                <button type="button" id="clearButton" class="btn btn-danger pull-right" data-bind="click: deleteAll, visible: rows().length > 0">Clear All Dates</button>
+                <button type="button" class="btn btn-info pull-right" data-bind="click: loadTestData, visible: rows().length == 0">Load Sample Dates</button>
+                <button type="button" class="btn btn-danger pull-right" data-bind="click: deleteAll, visible: rows().length > 0">Clear All Dates</button>
             </h1>
         </div>
         <noscript>
@@ -110,7 +113,7 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody" data-bind="foreach: rows">
-                        <tr>
+                        <tr data-bind="css: {start: isStart(), stop: !isStart(), highlight: isHighlighted()}, event: {mouseover: $root.rowMouseOver, mouseout: $root.rowMouseOut}">
                             <td data-bind="text: formattedDate"></td>
                             <td data-bind="text: formattedType"></td>
                             <td data-bind="text: formattedAmount"></td>

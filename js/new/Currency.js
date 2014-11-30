@@ -1,8 +1,9 @@
 /**
  * Holds currency values and helps with addition, subtraction, and formatting.
- * @param {string|Currency} amount
+ * @param {string|Currency|undefined} amount
  * @constructor
  */
+
 function Currency(amount) {
 
     /**

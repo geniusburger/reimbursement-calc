@@ -510,8 +510,8 @@ window.onload = function() {
 	rc.storage = new StorageManager();
 
     var vm = new PageViewModel();
-    vm.loadTestData();
     ko.applyBindings(vm);
+    vm.loadTestData();
 
     //$("#inputButton").on('click', null, rc.getInput);
     //$("#testButton").on('click', null, rc.loadTestData);
