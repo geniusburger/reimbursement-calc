@@ -41,7 +41,7 @@ function Currency(amount) {
     if( typeof amount === 'string') {
         // amount is a currency string with dollars and cents
         amount = amount.replace(/\s|\$|,/g,'');  // Remove all whitespace, commas, and dollar signs
-        if( !isNaN(amount)) {
+        if( !isNaN(amount) && amount !== '') {
             var parts = amount.split('.');
             this.dollars = parseInt(parts[0]);
 	        if( parts.length == 1) {

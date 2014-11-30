@@ -3,16 +3,47 @@ function PageViewModel() {
     var self = this;
 
     self.date = ko.observable();
+    self.dateError = ko.observable(false);
     self.amount = ko.observable();
+    self.amountError = ko.observable(false);
     self.timeAmount = ko.observable(2);
+    self.lastTimeAmount = 1;
     self.timeUnit = ko.observable('Years');
     self.rows = ko.observableArray();
     self.isSmall = ko.observable(false);
 
-    self.timeAmountOptions = ko.observableArray();
     self.timeUnitOptions = ['Days', 'Months', 'Years'];
 
-    self.populateTimeAmounts();
+    self.sizeRow = new RowViewModel(new Date(0), new Currency('0'), true, self.isSmall, 'SizeRow');
+    self.rows.push(new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, 'Today'));
+
+    self.timeAmountOptions = ko.computed(function(){
+        var amount = this.timeAmount();
+        var max = 0;
+        switch (this.timeUnit()) {
+            case 'Days':
+                max = 30;
+                break;
+            case 'Months':
+                max = 12;
+                break;
+            case 'Years':
+                max = 20;
+                break;
+            default:
+                console.error('Failed to populate time amounts from unit: ' + this.timeUnit());
+                return;
+        }
+        if (amount > max) {
+            amount = max;
+        }
+        this.timeAmount(amount);
+        var options = [];
+        for (var i = 1; i <= max; i++) {
+            options.push(i);
+        }
+        return options;
+    }, this);
 
     self.removePair = function(row) {
         self.rows.remove(row);
@@ -33,74 +64,41 @@ function PageViewModel() {
         self.rows.push(new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, 'Today'));
     };
 
-    self.sizeRow = new RowViewModel(new Date(0), new Currency('0'), true, self.isSmall, 'SizeRow');
-    self.rows.push(new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, 'Today'));
+    self.getInput = function() {
+        console.log('getInput', this.date(), this.amount(), this.timeAmount(), this.timeUnit());
+
+        //$("#inputButton").blur();
+        var date = new Date(this.date());
+        var amount = new Currency(this.amount());
+        var valid = true;
+
+        if (!amount.valid) {
+            valid = false;
+            self.amountError(true);
+            //amountInput.focus();
+        } else {
+            self.amountError(false);
+        }
+
+        if (util.isInvalidDate(date)) {
+            valid = false;
+            self.dateError(true);
+            //dateInput.focus();
+        } else {
+            self.dateError(false);
+        }
+
+        if (valid) {
+            this.date("");
+            this.amount("");
+            this.addDate(date, amount);
+            //rc.storage.setDates();
+            //rc.drawChart();
+            //dateInput.focus();
+        }
+        return false;
+    };
 }
-
-PageViewModel.prototype.populateTimeAmounts = function() {
-    var amount = this.timeAmount();
-    var max = 0;
-    switch (this.timeUnit()) {
-        case 'Days':
-            max = 30;
-            break;
-        case 'Months':
-            max = 12;
-            break;
-        case 'Years':
-            max = 20;
-            break;
-        default:
-            console.error('Failed to populate time amounts from unit: ' + this.timeUnit());
-            return;
-    }
-
-    this.timeAmountOptions.removeAll();
-    for (var i = 1; i <= max; i++) {
-        this.timeAmountOptions.push(i);
-    }
-
-    if (amount > max) {
-        amount = max;
-    }
-
-    this.timeAmount(amount);
-};
-
-PageViewModel.prototype.getInput = function() {
-    console.log('getInput', this.date(), this.amount(), this.timeAmount(), this.timeUnit());
-
-    //$("#inputButton").blur();
-    var date = new Date(this.date());
-    var amount = new Currency(this.amount());
-    var valid = true;
-
-    if (!amount.valid) {
-        valid = false;
-        //amountInput.parent().addClass("has-error");
-        //amountInput.focus();
-    } else {
-        //amountInput.parent().removeClass("has-error");
-    }
-
-    if (util.isInvalidDate(date)) {
-        valid = false;
-        //dateInput.parent().addClass("has-error");
-        //dateInput.focus();
-    } else {
-        //dateInput.parent().removeClass("has-error");
-    }
-
-    if (valid) {
-        this.date("");
-        this.amount("");
-        this.addDate(date, amount);
-        //rc.storage.setDates();
-        //rc.drawChart();
-        //dateInput.focus();
-    }
-    return false;
-};
 
 PageViewModel.prototype.addDate = function(date, amount) {
     var future = new Date(date);
