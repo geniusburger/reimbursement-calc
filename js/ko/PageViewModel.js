@@ -27,6 +27,13 @@ function PageViewModel() {
             console.log('updating row ' + i + ' of ' + a.length + ' with owed ' + owed.toString() + ', after:  ' + row.owed());
         });
     });
+
+    self.deleteAll = function() {
+        self.rows.removeAll();
+        self.rows.push(new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, true));
+    };
+
+    self.rows.push(new RowViewModel(new Date(), new Currency('0'), true, self.isSmall, true));
 }
 
 PageViewModel.prototype.populateTimeAmounts = function() {
@@ -94,7 +101,7 @@ PageViewModel.prototype.getInput = function() {
     return false;
 };
 
-PageViewModel.prototype.addDate = function(date, amount, name) {
+PageViewModel.prototype.addDate = function(date, amount) {
     var future = new Date(date);
     var duration = Number(this.timeAmount());
     switch (this.timeUnit()) {
@@ -112,8 +119,8 @@ PageViewModel.prototype.addDate = function(date, amount, name) {
             break;
     }
 
-    var startRow = new RowViewModel(date, amount, true, this.isSmall, name);
-    var stopRow = new RowViewModel(future, new Currency(amount), false, this.isSmall, name);
+    var startRow = new RowViewModel(date, amount, true, this.isSmall);
+    var stopRow = new RowViewModel(future, new Currency(amount), false, this.isSmall);
 
     startRow.matchingRow = stopRow;
     stopRow.matchingRow = startRow;
@@ -122,32 +129,32 @@ PageViewModel.prototype.addDate = function(date, amount, name) {
     this.rows.push(stopRow);
 
     this.rows.sort(function(left, right) {
-        return left.date().getTime() - right.date().getTime();
+        return left.date.getTime() - right.date.getTime();
     });
 };
 
 PageViewModel.prototype.loadTestData = function() {
     [
-        ["$7802.05", "7/6/2012", 'first'],
-        ["$6931.49", "2/1/2013", 'second'],
-        ["$7568.49", "4/12/2013", 'third'],
-        ["$3802.00", "1/6/2012", 'fourth'],
-        ["$3658.51", "4/13/2012", 'fifth'],
-        ["$775.00", "12/21/2012", 'sixth'],
-        ["$4350.00", "6/28/2013", 'seventh']
+        ["$7802.05", "7/6/2012"],
+        ["$6931.49", "2/1/2013"],
+        ["$7568.49", "4/12/2013"],
+        ["$3802.00", "1/6/2012"],
+        ["$3658.51", "4/13/2012"],
+        ["$775.00", "12/21/2012"],
+        ["$4350.00", "6/28/2013"]
     ].forEach(function(row){
-        this.addDate(new Date(row[1]), new Currency(row[0]), row[2]);
+        this.addDate(new Date(row[1]), new Currency(row[0]));
     }, this);
 };
 
-PageViewModel.prototype.deleteAll = function() {
-    this.rows.removeAll();
-};
-
 PageViewModel.prototype.rowMouseOver = function(row) {
-    row.isHighlighted(true).matchingRow.isHighlighted(true);
+    if( !row.isToday) {
+        row.isHighlighted(true).matchingRow.isHighlighted(true);
+    }
 };
 
 PageViewModel.prototype.rowMouseOut = function(row) {
-    row.isHighlighted(false).matchingRow.isHighlighted(false);
+    if( !row.isToday) {
+        row.isHighlighted(false).matchingRow.isHighlighted(false);
+    }
 };

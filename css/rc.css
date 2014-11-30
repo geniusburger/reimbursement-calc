@@ -91,6 +91,10 @@ tr.highlight.start {
 tr.highlight.stop {
   background-color: #62c462 !important;
 }
+tr.active {
+  font-weight: bold;
+  text-align: right;
+}
 table {
   width: auto !important;
   cursor: default;
