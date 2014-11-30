@@ -1,5 +1,7 @@
 
 loadOrder = [
+    'js/3rd-party/knockout-3.2.0.min.js',
+    'js/3rd-party/knockout.viewmodel.min.js',
     'js/util.js',
     'js/new/StorageManager.js',
     'js/cell/Cell.js',
@@ -12,9 +14,11 @@ loadOrder = [
     'js/new/TodayRow.js',
     'js/new/DateRow.js',
     'js/new/SizeRow.js',
+    'js/ko/RowViewModel.js',
+    'js/ko/PageViewModel.js',
     'js/rc.js',
-    'js/jquery-1.11.0.min.js',
-    'js/bootstrap.min.js'
+    'js/3rd-party/jquery-1.11.0.min.js',
+    'js/3rd-party/bootstrap.min.js'
 ];
 
 // check if not in node

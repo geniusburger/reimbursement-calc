@@ -509,42 +509,46 @@ window.onload = function() {
 
 	rc.storage = new StorageManager();
 
-    $("#inputButton").on('click', null, rc.getInput);
-    $("#testButton").on('click', null, rc.loadTestData);
-    $("#clearButton").on('click', null, dateRowUtil.deleteAll);
-    $("#inputAmount").keypress(rc.enterCatch);
-    $("#inputDate").keypress(rc.enterCatch);
+    var vm = new PageViewModel();
+    vm.loadTestData();
+    ko.applyBindings(vm);
 
-	rowUtil.table = document.getElementById('tableBody');
-	sizeRowUtil.add();
-    rc.$table = $('#dateTable');
-    rc.$column = rc.$table.parent();
-    rc.$chart = $('#chart');
-    rc.checkOverflow();
-	todayRowUtil.add();
-
-    rc.populateTimeAmounts('Years', 2);
-
-	var $timeUnit = $("#timeUnit");
-
-    if (window.isRunningLocally()) {
-        rc.loadTestData();
-    } else {
-        if (rc.storage.displayCookieWarning) {
-            $("#cookieAlert").removeClass("hidden");
-        }
-        var storedTimeAmount = rc.storage.getTimeAmount();
-        var storedTimeUnit = rc.storage.getTimeUnit();
-
-        if (storedTimeAmount !== null && storedTimeUnit !== null && storedTimeAmount !== "" && storedTimeUnit !== "") {
-	        $timeUnit.val(storedTimeUnit);
-            rc.populateTimeAmounts(storedTimeUnit, storedTimeAmount);
-        }
-
-	    rc.storage.getDates().forEach(function(date){rc.loadDate(date);});
-    }
-
-    $("#timeAmount").on('change', null, rc.timeAmountChanged);
-	$timeUnit.on('change', null, rc.timeUnitChanged);
-    $(window).resize(rc.checkOverflow);
+    //$("#inputButton").on('click', null, rc.getInput);
+    //$("#testButton").on('click', null, rc.loadTestData);
+    //$("#clearButton").on('click', null, dateRowUtil.deleteAll);
+    //$("#inputAmount").keypress(rc.enterCatch);
+    //$("#inputDate").keypress(rc.enterCatch);
+    //
+    //rowUtil.table = document.getElementById('tableBody');
+    //sizeRowUtil.add();
+    //rc.$table = $('#dateTable');
+    //rc.$column = rc.$table.parent();
+    //rc.$chart = $('#chart');
+    //rc.checkOverflow();
+    //todayRowUtil.add();
+    //
+    //rc.populateTimeAmounts('Years', 2);
+    //
+    //var $timeUnit = $("#timeUnit");
+    //
+    //if (window.isRunningLocally()) {
+    //    rc.loadTestData();
+    //} else {
+    //    if (rc.storage.displayCookieWarning) {
+    //        $("#cookieAlert").removeClass("hidden");
+    //    }
+    //    var storedTimeAmount = rc.storage.getTimeAmount();
+    //    var storedTimeUnit = rc.storage.getTimeUnit();
+    //
+    //    if (storedTimeAmount !== null && storedTimeUnit !== null && storedTimeAmount !== "" && storedTimeUnit !== "") {
+	 //       $timeUnit.val(storedTimeUnit);
+    //        rc.populateTimeAmounts(storedTimeUnit, storedTimeAmount);
+    //    }
+    //
+	 //   rc.storage.getDates().forEach(function(date){rc.loadDate(date);});
+    //}
+    //
+    //$("#timeAmount").on('change', null, rc.timeAmountChanged);
+    //$timeUnit.on('change', null, rc.timeUnitChanged);
+    //$(window).resize(rc.checkOverflow);
 };
