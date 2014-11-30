@@ -114,10 +114,10 @@
                     </thead>
                     <tbody id="tableBody" data-bind="foreach: rows">
                         <tr data-bind="css: {start: isStart, stop: !isStart, highlight: isHighlighted(), active: isToday}, event: {mouseover: $root.rowMouseOver, mouseout: $root.rowMouseOut}">
-                            <td data-bind="text: formattedDate"></td>
-                            <td data-bind="text: formattedType"></td>
-                            <td data-bind="text: formattedAmount"></td>
-                            <td data-bind="text: formattedOwed"></td>
+                            <td data-bind="text: formattedDate" class="text-right"></td>
+                            <td data-bind="text: formattedType" class="text-center"></td>
+                            <td data-bind="text: formattedAmount" class="text-right"></td>
+                            <td data-bind="text: formattedOwed" class="text-right"></td>
                             <td><button type="button" class="close" aria-hidden="true" data-bind="click: $root.removePair, visible: !isToday">×</button></td>
                         </tr>
                     </tbody>

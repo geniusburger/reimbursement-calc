@@ -93,7 +93,6 @@ tr.highlight.stop {
 }
 tr.active {
   font-weight: bold;
-  text-align: right;
 }
 table {
   width: auto !important;
