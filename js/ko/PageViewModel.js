@@ -222,3 +222,9 @@ PageViewModel.prototype.loadSavedData = function() {
     }, this);
     this.loading = false;
 };
+
+PageViewModel.prototype.getStartRows = function() {
+    return this.rows().filter(function(row) {
+        return row.isStart;
+    });
+};

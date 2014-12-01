@@ -2,12 +2,10 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/js/new/StorageManager.min.js" />
         <item url="file://$PROJECT_DIR$/js/ko/PageViewModel.min.js" />
         <item url="file://$PROJECT_DIR$/js/util.min.js" />
         <item url="file://$PROJECT_DIR$/js/master.min.js" />
         <item url="file://$PROJECT_DIR$/js/rc.min.js" />
-        <item url="file://$PROJECT_DIR$/js/new/Currency.min.js" />
         <item url="file://$PROJECT_DIR$/js/ko/RowViewModel.min.js" />
       </sourceFilesUrls>
     </properties>
@@ -30,8 +28,8 @@
       <root url="file://$PROJECT_DIR$/js/new/SizeRow.min.js" />
       <root url="file://$PROJECT_DIR$/js/new/Row.min.js" />
       <root url="file://$PROJECT_DIR$/js/new/TodayRow.min.js" />
-      <root url="file://$PROJECT_DIR$/js/ko/PageViewModel.min.js" />
       <root url="file://$PROJECT_DIR$/js/StorageManager.min.js" />
+      <root url="file://$PROJECT_DIR$/js/ko/PageViewModel.min.js" />
       <root url="file://$PROJECT_DIR$/js/master.min.js" />
       <root url="file://$PROJECT_DIR$/js/util.min.js" />
       <root url="file://$PROJECT_DIR$/js/rc.min.js" />

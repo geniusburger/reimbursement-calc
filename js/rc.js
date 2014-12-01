@@ -1,13 +1,13 @@
 
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////     Reimbursement Calc
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var rc = {};
 
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////     Constants
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 rc.DARK = '#272b30';
 rc.MID = '#2e3338';
@@ -63,57 +63,24 @@ rc.CHART_OPTIONS = {
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////     Variables
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 rc.storage = undefined;
 rc.chart = undefined;
-rc.wasSmall = false;
 
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////     Functions
-//////////////////////////////////////////////////////////////////////////////////
-
-rc.loadDate = function(date, amount) {
-	if(date instanceof Array && date.length === 2) {
-		amount = new Currency(date[0]);
-		date = new Date(date[1]);
-	}
-    dateRowUtil.add(date, rc.getSelectedTimeAmount(), rc.getSelectedTimeUnit(), amount, rc.completeLoadDate);
-};
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * @nextExpiration {Object|null} days Number of days until the next reimbursement expiration
  */
 rc.completeLoadDate = function() {
-    $("#testButton").addClass("hidden");
-    $("#clearButton").removeClass("hidden");
     rc.drawChart();
     // todo figure out how to do this without a random sleep
     setTimeout(rc.highlightPoints, 1000);
-};
-
-rc.addDate = function(date, amount) {
-	rc.loadDate(date, amount);
-	rc.storage.setDates();
-};
-
-/**
- * Load example/test data.
- */
-rc.loadTestData = function() {
-    [
-        ["$7802.05", "7/6/2012"],
-        ["$6931.49", "2/1/2013"],
-        ["$7568.49", "4/12/2013"],
-        ["$3802.00", "1/6/2012"],
-        ["$3658.51", "4/13/2012"],
-        ["$775.00", "12/21/2012"],
-        ["$4350.00", "6/28/2013"]
-	].forEach(function(date){
-		rc.addDate(date);
-	});
 };
 
 /**
@@ -124,16 +91,16 @@ rc.loadTestData = function() {
 rc.hoverPointHandler = function(point) {
     rc.lastPoint = point;
     // check if row is todayRow
-    var todayIndex = todayRowUtil.row.tr.rowIndex-2;
+    var todayIndex = rc.viewModel.rows.indexOf(rc.viewModel.todayRow);
     if( point.row === todayIndex) {
         rc.setChartSelection([
             {row: todayIndex, column: 1}
         ]);
         rc.colorPoints();
     } else {
-        var rows = rowUtil.getRows();
-        rows[point.row].row.highlight(true, true);
-        rc.highlightPoints(rows[point.row].row);
+        var row = rc.viewModel.rows()[point.row];
+        rc.viewModel.highlight(row, true);
+        rc.highlightPoints(row);
     }
 };
 
@@ -141,10 +108,9 @@ rc.hoverPointHandler = function(point) {
  * Handles mouseout events for points on the chart. All rows will be unhighlighted.
  */
 rc.unhoverPointHandler = function() {
-    var rows = dateRowUtil.getStartRows();
-	for( var i = 0; i < rows.length; i++) {
-		rows[i].row.highlight(false, true);
-	}
+    rc.viewModel.rows().forEach(function(row) {
+        rc.viewModel.highlight(row, false);
+    });
     rc.setChartSelection();
     rc.highlightPoints();
 };
@@ -159,19 +125,19 @@ rc.selectPointHandler = function() {
 
 rc.highlightPoints = function(row) {
 
-    var today = todayRowUtil.row;
-    var todayIndex = today.tr.rowIndex - 2;
+    var today = rc.viewModel.todayRow;
+    var todayIndex = rc.viewModel.rows.indexOf(today);
     if( typeof row === 'undefined' || row === null) {
         rc.setChartSelection([
             {row: todayIndex, column: 1}
         ]);
     } else {
-        var start = row.isStart() ? row : row.matchingRow;
+        var start = row.isStart ? row : row.matchingRow;
         var stop = start.matchingRow;
 
         // Subtract 2 from indexes to account for the header row and size row
-        var startIndex = start.tr.rowIndex - 2;
-        var stopIndex = stop.tr.rowIndex - 2;
+        var startIndex = rc.viewModel.rows.indexOf(start);
+        var stopIndex = rc.viewModel.rows.indexOf(stop);
 
         rc.setChartSelection([
             {row: startIndex, column: 1},
@@ -186,7 +152,7 @@ rc.highlightPoints = function(row) {
 rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex) {
 
     if (!rc.TODAY_COLOR) {
-        rc.TODAY_COLOR = $(today.tr).children('td').first().css('backgroundColor');
+        rc.TODAY_COLOR = rc.$table.find('.active').children('td').first().css('backgroundColor');
     }
 
     var selectedCircles = $("svg>g>g>g>circle");
@@ -263,10 +229,12 @@ rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex)
     }
 
     if (!rc.START_COLOR) {
-        rc.START_COLOR = $(start.tr).css('backgroundColor');
+        rc.START_COLOR = rc.$table.find('.tr.start.highlight').first().css('backgroundColor');
+        console.log('found start color: ' + rc.START_COLOR);
     }
     if (!rc.STOP_COLOR) {
-        rc.STOP_COLOR = $(stop.tr).css('backgroundColor');
+        rc.STOP_COLOR = rc.$table.find('.tr.stop.highlight').first().css('backgroundColor');
+        console.log('found stop color: ' + rc.STOP_COLOR);
     }
 
     rc.setSelectedPointColor(selectedCircles[start1], selectedCircles[start2], rc.START_COLOR);
@@ -291,47 +259,6 @@ rc.setSelectedPointColor = function(outerCircle, innerCircle, color) {
     $(innerCircle).attr("fill", color);
 };
 
-rc.enterCatch = function(e) {
-    if (e.keyCode == 13) {
-        rc.getInput();
-    }
-};
-
-rc.getInput = function() {
-    $("#inputButton").blur();
-    var dateInput = $("#inputDate");
-    var amountInput = $("#inputAmount");
-	var date = new Date(dateInput.val());
-    var amount = new Currency(amountInput.val());
-	var valid = true;
-
-    if (!amount.valid) {
-	    valid = false;
-	    amountInput.parent().addClass("has-error");
-	    amountInput.focus();
-    } else {
-	    amountInput.parent().removeClass("has-error");
-    }
-
-    if (util.isInvalidDate(date)) {
-	    valid = false;
-	    dateInput.parent().addClass("has-error");
-	    dateInput.focus();
-    } else {
-	    dateInput.parent().removeClass("has-error");
-    }
-
-	if (valid) {
-		dateInput.val("");
-		amountInput.val("");
-		rc.addDate(date, amount);
-		rc.storage.setDates();
-		rc.drawChart();
-		dateInput.focus();
-	}
-    return false;
-};
-
 rc.drawChart = function() {
     if( !chartIsReady) {
         rc.$chart.css('visibility', 'hidden');
@@ -343,7 +270,7 @@ rc.drawChart = function() {
             google.visualization.events.addListener(rc.chart, 'onmouseover', rc.hoverPointHandler);
             google.visualization.events.addListener(rc.chart, 'onmouseout', rc.unhoverPointHandler);
         }
-		var rows = rowUtil.getRows();
+		var rows = rc.viewModel.rows();
         if( rows.length <= 1) {
             rc.$chart.css('visibility', 'hidden');
         } else {
@@ -356,27 +283,27 @@ rc.drawChart = function() {
         var data = [];
         data[0] = ['Date', 'Owed'];
         for( var i = 0; i < rows.length; i++) {
-            if( rows[i].row instanceof TodayRow) {
-                todayDot.today = rows[i].row;
+            if( rows[i].isToday) {
+                todayDot.today = rows[i];
             } else {
                 if( todayDot.today) {
                     // insert todayDot, calculate value
-                    var nextDate = rows[i].row;
-                    var previousTime = todayDot.previous.dateCell.date.getTime();
-                    var todayTime = todayDot.today.dateCell.date.getTime();
-                    var nextTime = nextDate.dateCell.date.getTime();
+                    var nextDate = rows[i];
+                    var previousTime = todayDot.previous.date.getTime();
+                    var todayTime = todayDot.today.date.getTime();
+                    var nextTime = nextDate.date.getTime();
                     var totalTime = nextTime - previousTime;
 
                     var fractionOfTime = (todayTime - previousTime) / totalTime;
 
-                    var previousOwed = todayDot.previous.owedCell.currency.toFloat();
-                    var nextOwed = nextDate.owedCell.currency.toFloat();
+                    var previousOwed = todayDot.previous.owed().toFloat();
+                    var nextOwed = nextDate.owed().toFloat();
                     var todayOwed = previousOwed + (fractionOfTime * (nextOwed - previousOwed));
 
                     data.push(rc.buildDot(todayDot.today, todayOwed));
                     todayDot.today = null;
                 }
-                todayDot.previous = rows[i].row;
+                todayDot.previous = rows[i];
                 data.push(rc.buildDot(todayDot.previous));
             }
         }
@@ -390,20 +317,11 @@ rc.drawChart = function() {
 };
 
 rc.buildDot = function(row, yValue) {
-    var xValue = row.dateCell.date;
+    var xValue = row.date;
     var xFormatted = xValue.toString().split(' ')[1] + ' ' + xValue.getDate() + ', ' + xValue.getFullYear();
-    yValue = yValue || row.owedCell.currency.toFloat();
-    var yFormatted = row.owedCell.currency.toString();
+    yValue = yValue || row.owed().toFloat();
+    var yFormatted = row.owed().toString();
     return [{v: xValue, f: xFormatted}, {v: yValue, f: yFormatted}];
-};
-
-rc.setSmall = function(newSmall) {
-    if( newSmall !== rc.wasSmall) {
-        rc.viewModel.isSmall(newSmall);
-        rc.wasSmall = newSmall;
-        return true;
-    }
-    return false;
 };
 
 rc.checkOverflow = function() {
@@ -411,11 +329,11 @@ rc.checkOverflow = function() {
     if( rc.lastColWidth !== colWidth) {
         rc.lastColWidth = colWidth;
 
-        //rc.$chart.css({
-        //    width: colWidth + 'px',
-        //    height: colWidth + 'px'
-        //});
-        //rc.drawChart();
+        rc.$chart.css({
+            width: colWidth + 'px',
+            height: colWidth + 'px'
+        });
+        rc.drawChart();
 
         if( !rc.largeTableWidth) {
             rc.largeTableWidth = rc.$table.width();
@@ -424,9 +342,9 @@ rc.checkOverflow = function() {
     }
 };
 
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////     Setup
-//////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 window.onload = function() {
 
@@ -439,24 +357,5 @@ window.onload = function() {
     rc.$column = rc.$table.parent();
     rc.$chart = $('#chart');
     rc.checkOverflow();
-
-    //if (window.isRunningLocally()) {
-    //    rc.loadTestData();
-    //} else {
-    //    if (rc.storage.displayCookieWarning) {
-    //        $("#cookieAlert").removeClass("hidden");
-    //    }
-    //    var storedTimeAmount = rc.storage.getTimeAmount();
-    //    var storedTimeUnit = rc.storage.getTimeUnit();
-    //
-    //    if (storedTimeAmount !== null && storedTimeUnit !== null && storedTimeAmount !== "" && storedTimeUnit !== "") {
-	 //       $timeUnit.val(storedTimeUnit);
-    //        rc.populateTimeAmounts(storedTimeUnit, storedTimeAmount);
-    //    }
-    //
-	 //   rc.storage.getDates().forEach(function(date){rc.loadDate(date);});
-    //}
-    //
-
     $(window).resize(rc.checkOverflow);
 };
