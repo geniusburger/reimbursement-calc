@@ -13,6 +13,8 @@ function PageViewModel(storage) {
     self.rows = ko.observableArray();//.extend({ rateLimit: {timeout: 50, method: 'notifyWhenChangesStop '}});
     self.isSmall = ko.observable(false);
     self.daysLeft = ko.observable(0);
+    self.dateFocus = ko.observable(true);
+    self.amountFocus = ko.observable(false);
     self.nextRow = null;
     self.loading = false;
     self.timeUnitOptions = ['Days', 'Months', 'Years'];
@@ -114,14 +116,14 @@ function PageViewModel(storage) {
 
         if (!amount.valid) {
             valid = false;
-            //amountInput.focus();
+            self.amountFocus(true);
         }
         self.amountError(!amount.valid);
 
         if (util.isInvalidDate(date)) {
             valid = false;
             self.dateError(true);
-            //dateInput.focus();
+            self.dateFocus(true);
         } else {
             self.dateError(false);
         }
@@ -131,7 +133,7 @@ function PageViewModel(storage) {
             self.amount("");
             self.addDate(date, amount);
             //rc.drawChart();
-            //dateInput.focus();
+            self.dateFocus(true);
         }
         return false;
     };

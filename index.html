@@ -45,13 +45,13 @@
                     <div class="col-xs-12 col-sm-6 col-md-5 col-lg-4">
                         <div class="input-group" data-bind="css: {'has-error': dateError}">
                             <span class="input-group-addon">Date Reimbursed</span>
-                            <input type="date" id="inputDate" class="form-control" autofocus data-bind="value: date">
+                            <input type="date" id="inputDate" class="form-control" data-bind="value: date, hasFocus: dateFocus">
                         </div>
                     </div>
                     <div class="col-xs-9 col-sm-4 col-md-3 col-lg-2">
                         <div class="input-group" data-bind="css: {'has-error': amountError}">
                             <span class="input-group-addon">$</span>
-                            <input type="text" id="inputAmount" class="form-control" placeholder="Amount" data-bind="value: amount">
+                            <input type="text" id="inputAmount" class="form-control" placeholder="Amount" data-bind="value: amount, hasFocus: amountFocus">
                         </div>
                     </div>
                     <div class="col-xs-3 col-sm-2 col-md-2 col-lg-1">
