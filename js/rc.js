@@ -80,7 +80,10 @@ rc.chart = undefined;
 rc.completeLoadDate = function() {
     rc.drawChart();
     // todo figure out how to do this without a random sleep
-    setTimeout(rc.highlightPoints, 1000);
+    setTimeout(function() {
+        rc.highlightPoints();
+        rc.viewModel.updateChart = rc.drawChart;
+    }, 1000);
 };
 
 /**
@@ -108,9 +111,7 @@ rc.hoverPointHandler = function(point) {
  * Handles mouseout events for points on the chart. All rows will be unhighlighted.
  */
 rc.unhoverPointHandler = function() {
-    rc.viewModel.rows().forEach(function(row) {
-        rc.viewModel.highlight(row, false);
-    });
+    rc.viewModel.unHighlightAllRows();
     rc.setChartSelection();
     rc.highlightPoints();
 };
@@ -285,19 +286,23 @@ rc.drawChart = function() {
                 todayDot.today = rows[i];
             } else {
                 if( todayDot.today) {
-                    // insert todayDot, calculate value
-                    var nextDate = rows[i];
-                    var previousTime = todayDot.previous.date.getTime();
-                    var todayTime = todayDot.today.date.getTime();
-                    var nextTime = nextDate.date.getTime();
-                    var totalTime = nextTime - previousTime;
+                    // insert todayDot
+                    if( todayDot.previous) {
+                        // calculate owed value
+                        var nextDate = rows[i];
+                        var previousTime = todayDot.previous.date.getTime();
+                        var todayTime = todayDot.today.date.getTime();
+                        var nextTime = nextDate.date.getTime();
+                        var totalTime = nextTime - previousTime;
 
-                    var fractionOfTime = (todayTime - previousTime) / totalTime;
+                        var fractionOfTime = (todayTime - previousTime) / totalTime;
 
-                    var previousOwed = todayDot.previous.owed().toFloat();
-                    var nextOwed = nextDate.owed().toFloat();
-                    var todayOwed = previousOwed + (fractionOfTime * (nextOwed - previousOwed));
-
+                        var previousOwed = todayDot.previous.owed().toFloat();
+                        var nextOwed = nextDate.owed().toFloat();
+                        var todayOwed = previousOwed + (fractionOfTime * (nextOwed - previousOwed));
+                    } else {
+                        todayOwed = 0;
+                    }
                     data.push(rc.buildDot(todayDot.today, todayOwed));
                     todayDot.today = null;
                 }
@@ -346,14 +351,16 @@ rc.checkOverflow = function() {
 
 window.onload = function() {
 
-	rc.storage = new StorageManager();
-    rc.viewModel = new PageViewModel(rc.storage, rc.highlightPoints);
-    ko.applyBindings(rc.viewModel);
-    rc.viewModel.loadSavedData();
-
     rc.$table = $('#dateTable');
     rc.$column = rc.$table.parent();
     rc.$chart = $('#chart');
+
+	rc.storage = new StorageManager();
+    rc.viewModel = new PageViewModel(rc.storage, rc.highlightPoints, rc.drawChart);
+    ko.applyBindings(rc.viewModel);
+    rc.viewModel.loadSavedData();
     rc.checkOverflow();
     $(window).resize(rc.checkOverflow);
+
+    rc.completeLoadDate();
 };

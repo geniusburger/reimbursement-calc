@@ -4,6 +4,7 @@ function PageViewModel(storage, highlightPointsCallback) {
 
     self.storage = storage;
     self.highlightPoints = highlightPointsCallback;
+    self.updateChart = null;
     self.date = ko.observable();
     self.dateError = ko.observable(false);
     self.amount = ko.observable();
@@ -85,6 +86,12 @@ function PageViewModel(storage, highlightPointsCallback) {
             }
 
             self.daysLeft(days);
+        } else {
+            self.daysLeft(0);
+        }
+        if( changes.length % 2 && self.updateChart) {
+            self.updateChart();
+            //setTimeout(self.highlightPoints, 1000);
         }
     });
 
@@ -148,30 +155,36 @@ function PageViewModel(storage, highlightPointsCallback) {
     });
 
     self.rowMouseOver = function(row) {
+        self.unHighlightAllRows();
         if( self.highlight(row, true)) {
             self.highlightPoints(row);
         }
     };
 
-    self.rowMouseOut = function(row) {
-        self.highlight(row, false);
+    self.mouseOut = function() {
+        self.unHighlightAllRows();
         self.highlightPoints();
     };
 
     self.nextMouseOver = function() {
-        self.highlight(self.nextRow, true);
+        self.unHighlightAllRows();
+        if( self.highlight(self.nextRow, true)) {
+            self.highlightPoints(self.nextRow);
+        }
     };
 
-    self.nextMouseOut = function() {
-        self.highlight(self.nextRow, false);
-    };
-
-    self.highlight = function(row, highlight) {
+    self.highlight = function(row) {
         if( !row.isToday && !row.isSizeRow) {
-            row.isHighlighted(highlight).matchingRow.isHighlighted(highlight);
+            row.isHighlighted(true).matchingRow.isHighlighted(true);
             return true;
         }
         return false;
+    };
+
+    self.unHighlightAllRows = function() {
+        self.rows().forEach(function(row) {
+            row.isHighlighted(false);
+        })
     };
 }
 
