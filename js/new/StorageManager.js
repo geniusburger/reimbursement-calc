@@ -29,7 +29,7 @@ StorageManager.prototype.getTimeAmount = function() {
 };
 
 StorageManager.prototype.setTimeAmount = function(timeAmount) {
-	this.set(this.names.TIME_UNIT, timeAmount);
+	this.set(this.names.TIME_AMOUNT, timeAmount);
 };
 
 StorageManager.prototype.getDates = function() {

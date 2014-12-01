@@ -7,9 +7,9 @@ function PageViewModel(storage) {
     self.dateError = ko.observable(false);
     self.amount = ko.observable();
     self.amountError = ko.observable(false);
-    self.timeAmount = ko.observable(2);
+    self.timeAmount = ko.observable(storage.getTimeAmount() || 2);
     self.lastTimeAmount = 1;
-    self.timeUnit = ko.observable('Years');
+    self.timeUnit = ko.observable(storage.getTimeUnit() || 'Years');
     self.rows = ko.observableArray();//.extend({ rateLimit: {timeout: 50, method: 'notifyWhenChangesStop '}});
     self.isSmall = ko.observable(false);
     self.daysLeft = ko.observable(0);
@@ -22,9 +22,10 @@ function PageViewModel(storage) {
     self.rows.push(self.todayRow);
 
     self.timeAmountOptions = ko.computed(function(){
-        var amount = this.timeAmount();
+        var unit = this.timeUnit();
+        var amount = this.timeAmount.peek();
         var max = 0;
-        switch (this.timeUnit()) {
+        switch (unit) {
             case 'Days':
                 max = 30;
                 break;
@@ -41,6 +42,7 @@ function PageViewModel(storage) {
         if (amount > max) {
             amount = max;
         }
+        console.log('amount', amount);
         this.timeAmount(amount);
         var options = [];
         for (var i = 1; i <= max; i++) {
@@ -107,10 +109,8 @@ function PageViewModel(storage) {
     };
 
     self.getInput = function() {
-        console.log('getInput', this.date(), this.amount(), this.timeAmount(), this.timeUnit());
-
-        var date = new Date(this.date());
-        var amount = new Currency(this.amount());
+        var date = new Date(self.date());
+        var amount = new Currency(self.amount());
         var valid = true;
 
         if (!amount.valid) {
@@ -128,15 +128,23 @@ function PageViewModel(storage) {
         }
 
         if (valid) {
-            this.date("");
-            this.amount("");
-            this.addDate(date, amount);
-            //rc.storage.setDates();
+            self.date("");
+            self.amount("");
+            self.addDate(date, amount);
             //rc.drawChart();
             //dateInput.focus();
         }
         return false;
     };
+
+    self.timeAmount.subscribe(function(newValue) {
+        console.log('saving timeAmount ' + newValue);
+        self.storage.setTimeAmount(newValue);
+    });
+
+    self.timeUnit.subscribe(function(newValue) {
+        self.storage.setTimeUnit(newValue);
+    });
 }
 
 PageViewModel.prototype.addDate = function(date, amount) {
