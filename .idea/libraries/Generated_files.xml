@@ -31,11 +31,11 @@
       <root url="file://$PROJECT_DIR$/js/new/Row.min.js" />
       <root url="file://$PROJECT_DIR$/js/new/TodayRow.min.js" />
       <root url="file://$PROJECT_DIR$/js/ko/PageViewModel.min.js" />
-      <root url="file://$PROJECT_DIR$/js/new/StorageManager.min.js" />
+      <root url="file://$PROJECT_DIR$/js/StorageManager.min.js" />
       <root url="file://$PROJECT_DIR$/js/master.min.js" />
       <root url="file://$PROJECT_DIR$/js/util.min.js" />
       <root url="file://$PROJECT_DIR$/js/rc.min.js" />
-      <root url="file://$PROJECT_DIR$/js/new/Currency.min.js" />
+      <root url="file://$PROJECT_DIR$/js/Currency.min.js" />
       <root url="file://$PROJECT_DIR$/js/ko/RowViewModel.min.js" />
     </CLASSES>
     <SOURCES />
