@@ -133,7 +133,9 @@
                 </table>
             </div>
             <div class="col-xs-12 col-lg-6">
-                <div id="nextEvent" data-bind="visible: daysLeft() > 0"><div>Next obligation expires in <span id="daysLeft" data-bind="text: daysLeft">2</span> days</div></div>
+                <div id="nextEvent" data-bind="visible: daysLeft() > 0">
+                    <div data-bind="event: {mouseover: $root.nextMouseOver, mouseout: $root.nextMouseOut}">Next obligation expires in <span id="daysLeft" data-bind="text: daysLeft">2</span> days</div>
+                </div>
                 <div id="chart" class="center-block" style="width: 300px; height: 300px;"></div>
             </div>
         </div>

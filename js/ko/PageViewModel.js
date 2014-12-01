@@ -42,7 +42,6 @@ function PageViewModel(storage) {
         if (amount > max) {
             amount = max;
         }
-        console.log('amount', amount);
         this.timeAmount(amount);
         var options = [];
         for (var i = 1; i <= max; i++) {
@@ -138,13 +137,34 @@ function PageViewModel(storage) {
     };
 
     self.timeAmount.subscribe(function(newValue) {
-        console.log('saving timeAmount ' + newValue);
         self.storage.setTimeAmount(newValue);
     });
 
     self.timeUnit.subscribe(function(newValue) {
         self.storage.setTimeUnit(newValue);
     });
+
+    self.rowMouseOver = function(row) {
+        self.highlight(row, true);
+    };
+
+    self.rowMouseOut = function(row) {
+        self.highlight(row, false);
+    };
+
+    self.nextMouseOver = function() {
+        self.highlight(self.nextRow, true);
+    };
+
+    self.nextMouseOut = function() {
+        self.highlight(self.nextRow, false);
+    };
+
+    self.highlight = function(row, highlight) {
+        if( !row.isToday && !row.isSizeRow) {
+            row.isHighlighted(highlight).matchingRow.isHighlighted(highlight);
+        }
+    };
 }
 
 PageViewModel.prototype.addDate = function(date, amount) {
@@ -199,16 +219,4 @@ PageViewModel.prototype.loadSavedData = function() {
         this.addDate(new Date(row[1]), new Currency(row[0]));
     }, this);
     this.loading = false;
-};
-
-PageViewModel.prototype.rowMouseOver = function(row) {
-    if( !row.isToday && !row.isSizeRow) {
-        row.isHighlighted(true).matchingRow.isHighlighted(true);
-    }
-};
-
-PageViewModel.prototype.rowMouseOut = function(row) {
-    if( !row.isToday && !row.isSizeRow) {
-        row.isHighlighted(false).matchingRow.isHighlighted(false);
-    }
 };
