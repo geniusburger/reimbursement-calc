@@ -229,12 +229,10 @@ rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex)
     }
 
     if (!rc.START_COLOR) {
-        rc.START_COLOR = rc.$table.find('.tr.start.highlight').first().css('backgroundColor');
-        console.log('found start color: ' + rc.START_COLOR);
+        rc.START_COLOR = rc.$table.find('tr.start.highlight').first().css('backgroundColor');
     }
     if (!rc.STOP_COLOR) {
-        rc.STOP_COLOR = rc.$table.find('.tr.stop.highlight').first().css('backgroundColor');
-        console.log('found stop color: ' + rc.STOP_COLOR);
+        rc.STOP_COLOR = rc.$table.find('tr.stop.highlight').first().css('backgroundColor');
     }
 
     rc.setSelectedPointColor(selectedCircles[start1], selectedCircles[start2], rc.START_COLOR);
@@ -349,7 +347,7 @@ rc.checkOverflow = function() {
 window.onload = function() {
 
 	rc.storage = new StorageManager();
-    rc.viewModel = new PageViewModel(rc.storage);
+    rc.viewModel = new PageViewModel(rc.storage, rc.highlightPoints);
     ko.applyBindings(rc.viewModel);
     rc.viewModel.loadSavedData();
 

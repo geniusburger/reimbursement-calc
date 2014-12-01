@@ -1,8 +1,9 @@
 
-function PageViewModel(storage) {
+function PageViewModel(storage, highlightPointsCallback) {
     var self = this;
 
     self.storage = storage;
+    self.highlightPoints = highlightPointsCallback;
     self.date = ko.observable();
     self.dateError = ko.observable(false);
     self.amount = ko.observable();
@@ -147,11 +148,14 @@ function PageViewModel(storage) {
     });
 
     self.rowMouseOver = function(row) {
-        self.highlight(row, true);
+        if( self.highlight(row, true)) {
+            self.highlightPoints(row);
+        }
     };
 
     self.rowMouseOut = function(row) {
         self.highlight(row, false);
+        self.highlightPoints();
     };
 
     self.nextMouseOver = function() {
@@ -165,7 +169,9 @@ function PageViewModel(storage) {
     self.highlight = function(row, highlight) {
         if( !row.isToday && !row.isSizeRow) {
             row.isHighlighted(highlight).matchingRow.isHighlighted(highlight);
+            return true;
         }
+        return false;
     };
 }
 
