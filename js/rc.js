@@ -23,7 +23,7 @@ rc.CHART_OPTIONS = {
     backgroundColor: rc.BACKGROUND,
     selectionMode: 'multiple',
     animation: {
-        duration: 300
+        duration: 100
     },
     series: {
         color: rc.LINE
@@ -98,8 +98,7 @@ rc.hoverPointHandler = function(point) {
     if( point.row === todayIndex) {
         rc.setChartSelection([
             {row: todayIndex, column: 1}
-        ]);
-        rc.colorPoints();
+        ], rc.colorPoints);
     } else {
         var row = rc.viewModel.rows()[point.row];
         rc.viewModel.highlight(row, true);
@@ -129,25 +128,25 @@ rc.highlightPoints = function(row) {
     var today = rc.viewModel.todayRow;
     var todayIndex = rc.viewModel.rows.indexOf(today);
     if( typeof row === 'undefined' || row === null) {
-        rc.setChartSelection([
+        var selection = [
             {row: todayIndex, column: 1}
-        ]);
+        ];
     } else {
         var start = row.isStart ? row : row.matchingRow;
         var stop = start.matchingRow;
-
-        // Subtract 2 from indexes to account for the header row and size row
         var startIndex = rc.viewModel.rows.indexOf(start);
         var stopIndex = rc.viewModel.rows.indexOf(stop);
 
-        rc.setChartSelection([
+        selection = [
             {row: startIndex, column: 1},
             {row: stopIndex, column: 1},
             {row: todayIndex, column: 1}
-        ]);
+        ];
     }
 
-    rc.colorPoints(start, stop, today, startIndex, stopIndex, todayIndex)
+    rc.setChartSelection(selection, function() {
+        rc.colorPoints(start, stop, today, startIndex, stopIndex, todayIndex);
+    });
 };
 
 rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex) {
@@ -241,16 +240,35 @@ rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex)
     rc.setSelectedPointColor(selectedCircles[today1], selectedCircles[today2], rc.TODAY_COLOR);
 };
 
-rc.setChartSelection = function(selection) {
-	try {
-		rc.chart.setSelection(selection);
-	} catch (e) {
-		console.warn("Oddity setting selection", e);
-	}
-};
+rc.SELECT_RETRY_LIMIT = 10;
+rc.callbackHandles = [];
 
-rc.clearChartSelection = function() {
-	rc.setChartSelection();
+rc.setChartSelection = function(selection, callback, attempts) {
+    try {
+        rc.chart.setSelection(selection);
+        rc.callbackHandles.forEach(function(handle) {
+            clearTimeout(handle);
+        });
+        if( callback) {
+            callback();
+            rc.callbackHandles = [
+                setTimeout(callback, 20),
+                setTimeout(callback, 50),
+                setTimeout(callback, 100),
+                setTimeout(callback, 200)
+            ];
+        }
+    } catch (e) {
+        if( typeof attempts !== 'number') {
+            attempts = 1;
+        }
+        console.warn("Oddity setting selection, attempt " + attempts + " of " + rc.SELECT_RETRY_LIMIT, e);
+        if(attempts < rc.SELECT_RETRY_LIMIT) {
+            setTimeout(function() {
+                rc.setChartSelection(selection, callback, attempts + 1);
+            }, 100);
+        }
+    }
 };
 
 rc.setSelectedPointColor = function(outerCircle, innerCircle, color) {
@@ -356,7 +374,7 @@ window.onload = function() {
     rc.$chart = $('#chart');
 
 	rc.storage = new StorageManager();
-    rc.viewModel = new PageViewModel(rc.storage, rc.highlightPoints, rc.drawChart);
+    rc.viewModel = new PageViewModel(rc.storage, rc.highlightPoints);
     ko.applyBindings(rc.viewModel);
     rc.viewModel.loadSavedData();
     rc.checkOverflow();

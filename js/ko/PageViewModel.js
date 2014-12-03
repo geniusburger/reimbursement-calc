@@ -55,8 +55,7 @@ function PageViewModel(storage, highlightPointsCallback) {
     }, this);
 
     self.removePair = function(row) {
-        self.rows.remove(row);
-        self.rows.remove(row.matchingRow);
+        self.rows.removeAll([row, row.matchingRow]); // remove both at the same time
     };
 
     // Update owed column automatically
@@ -91,7 +90,6 @@ function PageViewModel(storage, highlightPointsCallback) {
         }
         if( changes.length % 2 && self.updateChart) {
             self.updateChart();
-            //setTimeout(self.highlightPoints, 1000);
         }
     });
 
@@ -104,8 +102,9 @@ function PageViewModel(storage, highlightPointsCallback) {
         });
         self.deleteAll();
         dates.forEach(function(row) {
-            self.addDate(row.date, row. amount);
+            self.addDate(row.date, row.amount, true);
         });
+        self.rows.valueHasMutated(); // Notify others that rows has updated since we performed silent updates
     };
 
     self.timeAmount.subscribe(self.updateDuration);
@@ -141,6 +140,7 @@ function PageViewModel(storage, highlightPointsCallback) {
             self.amount("");
             self.addDate(date, amount);
             //rc.drawChart();
+            self.highlightPoints();
             self.dateFocus(true);
         }
         return false;
@@ -156,7 +156,7 @@ function PageViewModel(storage, highlightPointsCallback) {
 
     self.rowMouseOver = function(row) {
         self.unHighlightAllRows();
-        if( self.highlight(row, true)) {
+        if( self.highlight(row)) {
             self.highlightPoints(row);
         }
     };
@@ -168,7 +168,7 @@ function PageViewModel(storage, highlightPointsCallback) {
 
     self.nextMouseOver = function() {
         self.unHighlightAllRows();
-        if( self.highlight(self.nextRow, true)) {
+        if( self.highlight(self.nextRow)) {
             self.highlightPoints(self.nextRow);
         }
     };
@@ -188,7 +188,7 @@ function PageViewModel(storage, highlightPointsCallback) {
     };
 }
 
-PageViewModel.prototype.addDate = function(date, amount) {
+PageViewModel.prototype.addDate = function(date, amount, silentUpdate) {
     var future = new Date(date);
     var duration = Number(this.timeAmount());
     switch (this.timeUnit()) {
@@ -211,13 +211,15 @@ PageViewModel.prototype.addDate = function(date, amount) {
 
     startRow.matchingRow = stopRow;
     stopRow.matchingRow = startRow;
-
-    this.rows.push(startRow);
-    this.rows.push(stopRow);
-
-    this.rows.sort(function(left, right) {
+    // make updates to underlying array, then "publish" changes that two updates occur at once
+    this.rows().push(startRow);
+    this.rows().push(stopRow);
+    this.rows().sort(function(left, right) {
         return left.date.getTime() - right.date.getTime();
     });
+    if(!silentUpdate) {
+        this.rows.valueHasMutated();
+    }
 };
 
 PageViewModel.prototype.loadTestData = function() {
@@ -230,15 +232,18 @@ PageViewModel.prototype.loadTestData = function() {
         ["$775.00", "12/21/2012"],
         ["$4350.00", "6/28/2013"]
     ].forEach(function(row){
-        this.addDate(new Date(row[1]), new Currency(row[0]));
+        this.addDate(new Date(row[1]), new Currency(row[0]), true);
     }, this);
+    this.rows.valueHasMutated(); // Notify others that rows has updated since we performed silent updates
+    this.highlightPoints();
 };
 
 PageViewModel.prototype.loadSavedData = function() {
     this.loading = true;
     this.storage.getDates().forEach(function(row) {
-        this.addDate(new Date(row[1]), new Currency(row[0]));
+        this.addDate(new Date(row[1]), new Currency(row[0]), true);
     }, this);
+    this.rows.valueHasMutated(); // Notify others that rows has updated since we performed silent updates
     this.loading = false;
 };
 
