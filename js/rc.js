@@ -23,7 +23,8 @@ rc.CHART_OPTIONS = {
     backgroundColor: rc.BACKGROUND,
     selectionMode: 'multiple',
     animation: {
-        duration: 100
+        duration: 300,
+        easing: 'inAndOut'
     },
     series: {
         color: rc.LINE
@@ -245,35 +246,52 @@ rc.callbackHandles = [];
 
 rc.setChartSelection = function(selection, callback, attempts) {
     try {
+        rc.lastChartSelectionCallback = callback;
         rc.chart.setSelection(selection);
-        rc.callbackHandles.forEach(function(handle) {
-            clearTimeout(handle);
-        });
-        if( callback) {
-            callback();
-            rc.callbackHandles = [
-                setTimeout(callback, 20),
-                setTimeout(callback, 50),
-                setTimeout(callback, 100),
-                setTimeout(callback, 200)
-            ];
-        }
+        callback && callback();
+        //rc.callbackHandles.forEach(function(handle) {
+        //    clearTimeout(handle);
+        //});
+        //if( callback) {
+        //    callback();
+        //    rc.callbackHandles = [
+        //        setTimeout(callback, 20),
+        //        setTimeout(callback, 50),
+        //        setTimeout(callback, 100),
+        //        setTimeout(callback, 200)
+        //    ];
+        //} else {
+        //    rc.callbackHandles = [];
+        //}
     } catch (e) {
-        if( typeof attempts !== 'number') {
-            attempts = 1;
-        }
-        console.warn("Oddity setting selection, attempt " + attempts + " of " + rc.SELECT_RETRY_LIMIT, e);
-        if(attempts < rc.SELECT_RETRY_LIMIT) {
-            setTimeout(function() {
-                rc.setChartSelection(selection, callback, attempts + 1);
-            }, 100);
-        }
+
+        console.warn("Oddity setting selection, waiting for animation to finish", e);
+        rc.lastChartSelectionCallback = function() {
+            rc.chart.setSelection(selection);
+            callback && callback();
+        };
+
+        //if( typeof attempts !== 'number') {
+        //    attempts = 1;
+        //}
+        //console.warn("Oddity setting selection, attempt " + attempts + " of " + rc.SELECT_RETRY_LIMIT, e);
+        //if(attempts < rc.SELECT_RETRY_LIMIT) {
+        //    setTimeout(function() {
+        //        rc.setChartSelection(selection, callback, attempts + 1);
+        //    }, 100);
+        //}
     }
 };
 
 rc.setSelectedPointColor = function(outerCircle, innerCircle, color) {
     $(outerCircle).attr("stroke", color);
     $(innerCircle).attr("fill", color);
+};
+
+rc.chartAnimationFinish = function() {
+    console.log('animationFinish');
+    rc.lastChartSelectionCallback && rc.lastChartSelectionCallback();
+    rc.lastChartSelectionCallback = null;
 };
 
 rc.drawChart = function() {
@@ -286,6 +304,7 @@ rc.drawChart = function() {
             google.visualization.events.addListener(rc.chart, 'select', rc.selectPointHandler);
             google.visualization.events.addListener(rc.chart, 'onmouseover', rc.hoverPointHandler);
             google.visualization.events.addListener(rc.chart, 'onmouseout', rc.unhoverPointHandler);
+            google.visualization.events.addListener(rc.chart, 'animationfinish', rc.chartAnimationFinish);
         }
 		var rows = rc.viewModel.rows();
         if( rows.length <= 1) {
