@@ -44,7 +44,9 @@ StorageManager.prototype.getDates = function() {
 				console.warn('invalid saved date value', date);
 			}
 		});
-	}
+	} else {
+        console.warn('no cookies found');
+    }
 	return dates;
 };
 

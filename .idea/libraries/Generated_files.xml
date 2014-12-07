@@ -2,24 +2,26 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/js/util.min.js" />
         <item url="file://$PROJECT_DIR$/js/ko/PageViewModel.min.js" />
+        <item url="file://$PROJECT_DIR$/js/util.min.js" />
         <item url="file://$PROJECT_DIR$/js/rc.min.js" />
         <item url="file://$PROJECT_DIR$/js/ko/RowViewModel.min.js" />
         <item url="file://$PROJECT_DIR$/js/ko/CustomBindings.min.js" />
         <item url="file://$PROJECT_DIR$/js/StorageManager.min.js" />
         <item url="file://$PROJECT_DIR$/js/Currency.min.js" />
         <item url="file://$PROJECT_DIR$/js/master.min.js" />
+        <item url="file://$PROJECT_DIR$/js/master.min.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/js/ko/PageViewModel.min.js" />
       <root url="file://$PROJECT_DIR$/js/util.min.js" />
+      <root url="file://$PROJECT_DIR$/js/ko/PageViewModel.min.js" />
       <root url="file://$PROJECT_DIR$/js/rc.min.js" />
       <root url="file://$PROJECT_DIR$/js/ko/RowViewModel.min.js" />
       <root url="file://$PROJECT_DIR$/js/ko/CustomBindings.min.js" />
       <root url="file://$PROJECT_DIR$/js/StorageManager.min.js" />
       <root url="file://$PROJECT_DIR$/js/Currency.min.js" />
+      <root url="file://$PROJECT_DIR$/js/master.min.js" />
       <root url="file://$PROJECT_DIR$/js/master.min.js" />
     </CLASSES>
     <SOURCES />

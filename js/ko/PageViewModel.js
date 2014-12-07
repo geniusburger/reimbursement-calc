@@ -18,7 +18,7 @@ function PageViewModel(storage, highlightPointsCallback) {
     self.dateFocus = ko.observable(true);
     self.amountFocus = ko.observable(false);
     self.nextRow = null;
-    self.loading = false;
+    self.loading = true;
     self.timeUnitOptions = ['Days', 'Months', 'Years'];
     self.sizeRow = new RowViewModel(new Date(0), new Currency('0'), false, self.isSmall, 'SizeRow');
     self.todayRow = new RowViewModel(new Date(), new Currency('0'), false, self.isSmall, 'Today');
@@ -148,11 +148,15 @@ function PageViewModel(storage, highlightPointsCallback) {
     };
 
     self.timeAmount.subscribe(function(newValue) {
-        self.storage.setTimeAmount(newValue);
+        if( !self.loading) {
+            self.storage.setTimeAmount(newValue);
+        }
     });
 
     self.timeUnit.subscribe(function(newValue) {
-        self.storage.setTimeUnit(newValue);
+        if( !self.loading) {
+            self.storage.setTimeUnit(newValue);
+        }
     });
 
     self.rowMouseOver = function(row) {
@@ -245,7 +249,6 @@ PageViewModel.prototype.loadTestData = function() {
 };
 
 PageViewModel.prototype.loadSavedData = function() {
-    this.loading = true;
     this.storage.getDates().forEach(function(row) {
         this.addDate(new Date(row[1]), new Currency(row[0]), true);
     }, this);
