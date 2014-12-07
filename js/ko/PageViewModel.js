@@ -105,6 +105,7 @@ function PageViewModel(storage, highlightPointsCallback) {
             self.addDate(row.date, row.amount, true);
         });
         self.rows.valueHasMutated(); // Notify others that rows has updated since we performed silent updates
+        self.highlightPoints();
     };
 
     self.timeAmount.subscribe(self.updateDuration);
@@ -166,10 +167,14 @@ function PageViewModel(storage, highlightPointsCallback) {
         self.highlightPoints();
     };
 
+    self.waitingForAnimationToFinish = false;
+
     self.nextMouseOver = function() {
-        self.unHighlightAllRows();
-        if( self.highlight(self.nextRow)) {
-            self.highlightPoints(self.nextRow);
+        if( !self.waitingForAnimationToFinish) {
+            self.unHighlightAllRows();
+            if (self.highlight(self.nextRow)) {
+                self.highlightPoints(self.nextRow);
+            }
         }
     };
 
@@ -234,6 +239,7 @@ PageViewModel.prototype.loadTestData = function() {
     ].forEach(function(row){
         this.addDate(new Date(row[1]), new Currency(row[0]), true);
     }, this);
+    this.waitingForAnimationToFinish = true;
     this.rows.valueHasMutated(); // Notify others that rows has updated since we performed silent updates
     this.highlightPoints();
 };
@@ -251,4 +257,8 @@ PageViewModel.prototype.getStartRows = function() {
     return this.rows().filter(function(row) {
         return row.isStart;
     });
+};
+
+PageViewModel.prototype.animationFinished = function() {
+    this.waitingForAnimationToFinish = false;
 };

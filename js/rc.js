@@ -241,45 +241,17 @@ rc.colorPoints = function(start, stop, today, startIndex, stopIndex, todayIndex)
     rc.setSelectedPointColor(selectedCircles[today1], selectedCircles[today2], rc.TODAY_COLOR);
 };
 
-rc.SELECT_RETRY_LIMIT = 10;
-rc.callbackHandles = [];
-
-rc.setChartSelection = function(selection, callback, attempts) {
+rc.setChartSelection = function(selection, callback) {
     try {
         rc.lastChartSelectionCallback = callback;
         rc.chart.setSelection(selection);
         callback && callback();
-        //rc.callbackHandles.forEach(function(handle) {
-        //    clearTimeout(handle);
-        //});
-        //if( callback) {
-        //    callback();
-        //    rc.callbackHandles = [
-        //        setTimeout(callback, 20),
-        //        setTimeout(callback, 50),
-        //        setTimeout(callback, 100),
-        //        setTimeout(callback, 200)
-        //    ];
-        //} else {
-        //    rc.callbackHandles = [];
-        //}
     } catch (e) {
-
         console.warn("Oddity setting selection, waiting for animation to finish", e);
         rc.lastChartSelectionCallback = function() {
             rc.chart.setSelection(selection);
             callback && callback();
         };
-
-        //if( typeof attempts !== 'number') {
-        //    attempts = 1;
-        //}
-        //console.warn("Oddity setting selection, attempt " + attempts + " of " + rc.SELECT_RETRY_LIMIT, e);
-        //if(attempts < rc.SELECT_RETRY_LIMIT) {
-        //    setTimeout(function() {
-        //        rc.setChartSelection(selection, callback, attempts + 1);
-        //    }, 100);
-        //}
     }
 };
 
@@ -289,9 +261,9 @@ rc.setSelectedPointColor = function(outerCircle, innerCircle, color) {
 };
 
 rc.chartAnimationFinish = function() {
-    console.log('animationFinish');
     rc.lastChartSelectionCallback && rc.lastChartSelectionCallback();
     rc.lastChartSelectionCallback = null;
+    rc.viewModel.animationFinished();
 };
 
 rc.drawChart = function() {
